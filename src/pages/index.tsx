@@ -5,6 +5,7 @@ import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime"
 import Image from 'next/image'
+import { Loader } from "../components/loader"
 
 dayjs.extend(relativeTime)
 
@@ -65,9 +66,11 @@ const MessageView = (message: MessageWithUser) => {
 
 const Home: NextPage = () => {
   const user = useUser()
-  const {data} = api.message.getAll.useQuery()
+  const {data, isLoading} = api.message.getAll.useQuery()
 
   if (!user) return null
+
+  if (isLoading) return <div className="bg-zinc-900 w-screen h-screen flex items-center justify-center"><Loader widthHeight="w-[100px] h-[100px]" /></div>
 
   return (
     <>
