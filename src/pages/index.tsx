@@ -4,9 +4,8 @@ import { api } from "~/utils/api";
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
-
   const user = useUser()
+  const {data} = api.message.getAll.useQuery()
 
   return (
     <>
@@ -16,6 +15,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+        <div>
         {
         !user.isSignedIn && 
           <SignInButton mode="modal">
@@ -32,6 +32,14 @@ const Home: NextPage = () => {
             </button>
           </SignOutButton>
         }
+        </div>
+        <div>
+          {data?.map((message) => (
+            <div key={message.id}>
+              {message.body}
+            </div>
+          ))}
+        </div>
       </main>
     </>
   );
