@@ -16,6 +16,19 @@ const filterUserForClient = (users: User) => {
   };
 };
 
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+import { TRPCClientError } from '@trpc/client';
+import { TRPCError } from '@trpc/server';
+
+// Create a new ratelimiter, that allows 5 requests per 1 minute
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(5, '1 m'),
+  analytics: true,
+  prefix: '@upstash/ratelimit',
+});
+
 export const messagesRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     const messages = await ctx.prisma.message.findMany({
@@ -39,6 +52,9 @@ export const messagesRouter = createTRPCRouter({
     .input(z.object({ body: z.string().min(1).max(255) }))
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.userId;
+
+      const { success } = await ratelimit.limit(userId);
+      if (!success) throw new TRPCError({ code: 'TOO_MANY_REQUESTS' });
 
       const post = await ctx.prisma.message.create({
         data: {
