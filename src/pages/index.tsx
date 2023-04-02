@@ -6,19 +6,38 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime"
 import Image from 'next/image'
 import { Loader } from "../components/loader"
+import { useState } from "react";
 
 dayjs.extend(relativeTime)
 
 const PostMessageWizard = () => {
   const { user } = useUser()
+  const [input, setInput] = useState("")
+
+  const ctx = api.useContext()
+
+  const { mutate, isLoading: isPosting } = api.message.create.useMutation({
+    onSuccess: () => {
+      setInput("")
+      ctx.message.getAll.invalidate()
+    }
+  })
+
   if (user) {
     return (
       <div className="flex items-center">
         <Image width={80} height={80} src={user.profileImageUrl} alt="Profile Picture" className="w-[80px] h-[80px] rounded-full drop-shadow-lg border-4 border-emerald-300" />
         <div className="ml-8 w-full">
           <div className="w-full flex items-center gap-8" >
-            <input placeholder="message..." className="w-[90%] p-4 overflow-scroll bg-inherit border-2 border-zinc-300 rounded-2xl outline-none" />
-            <button className="bg-emerald-300 text-xl p-4 rounded-2xl drop-shadow-lg pl-6 pr-6 font-bold">
+            <input placeholder="message..." className="w-[90%] p-4 overflow-scroll bg-inherit border-2 border-zinc-300 rounded-2xl outline-none"
+              value={input}
+              type="text"
+              onChange={(e) => setInput(e.target.value)}
+              disabled={isPosting}
+            />
+            <button className="bg-emerald-300 text-xl p-4 rounded-2xl drop-shadow-lg pl-6 pr-6 font-bold"
+              onClick={() => mutate({ body: input })}
+            >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
               </svg>

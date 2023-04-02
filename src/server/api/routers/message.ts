@@ -1,7 +1,11 @@
 import { User, clerkClient } from '@clerk/nextjs/dist/api';
 import { z } from 'zod';
 
-import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
+import {
+  createTRPCRouter,
+  privateProcedure,
+  publicProcedure,
+} from '~/server/api/trpc';
 
 // clerck returns a lot of fields, need to be narrowed down
 const filterUserForClient = (users: User) => {
@@ -30,4 +34,19 @@ export const messagesRouter = createTRPCRouter({
       author: users.find((user) => user.id === message.userId),
     }));
   }),
+
+  create: privateProcedure
+    .input(z.object({ body: z.string().min(1).max(255) }))
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.userId;
+
+      const post = await ctx.prisma.message.create({
+        data: {
+          userId,
+          body: input.body,
+        },
+      });
+
+      return post;
+    }),
 });
