@@ -7,6 +7,7 @@ const config = {
   singleQuote: true,
   bracketSpacing: true,
   bracketSameLine: false,
-}
+  jsxBracketSameLine: false,
+};
 
-module.exports = config
+module.exports = config;

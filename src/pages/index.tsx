@@ -18,7 +18,11 @@ const PostMessageWizard = () => {
         <div className="ml-8 w-full">
           <div className="w-full flex items-center gap-8" >
             <input placeholder="message..." className="w-[90%] p-4 overflow-scroll bg-inherit border-2 border-zinc-300 rounded-2xl outline-none" />
-            <button className="bg-emerald-300 text-xl p-4 rounded-2xl drop-shadow-lg pl-6 pr-6 font-bold">Send</button>
+            <button className="bg-emerald-300 text-xl p-4 rounded-2xl drop-shadow-lg pl-6 pr-6 font-bold">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+              </svg>
+            </button>
           </div>
         </div>
       </div>
@@ -38,10 +42,18 @@ const MessageView = (message: MessageWithUser) => {
       <div>
         <div className="flex items-center gap-4">
           {message.author?.id !== user.user.id && <Image width={48} height={48} src={message.author.profileImageUrl} alt="User" className="w-12 h-12 rounded-full text-xs drop-shadow-lg" />}
-          <div
-            className="p-4 bg-emerald-300 rounded-2xl flex flex-col items-center w-fit drop-shadow-xl flex gap-4">
-            <p className="text-lg" >{message.message.body}</p>
-          </div>
+          {message.author.id === user.user.id &&
+            <div
+              className="p-4 bg-emerald-300 rounded-2xl flex flex-col items-center w-fit drop-shadow-xl flex gap-4">
+              <p className="text-lg" >{message.message.body}</p>
+            </div>
+          }
+          {message.author.id !== user.user.id &&
+            <div
+              className="p-4 bg-zinc-400 rounded-2xl flex flex-col items-center w-fit drop-shadow-xl flex gap-4">
+              <p className="text-lg" >{message.message.body}</p>
+            </div>
+          }
           {message.author?.id === user.user.id && <Image width={48} height={48} src={message.author.profileImageUrl} alt="profile" className="w-12 h-12 rounded-full text-xs drop-shadow-lg" />}
         </div>
         <p className="text-[11px] text-zinc-400 mt-2 ml-1">{dayjs(message.message.sentAt).fromNow()}</p>
@@ -54,7 +66,7 @@ const MessageView = (message: MessageWithUser) => {
       <div className="flex items-center gap-4">
         <Image width={48} height={48} src={message.author.profileImageUrl} alt="profile" className="w-12 h-12 rounded-full text-xs drop-shadow-lg" />
         <div
-          className="p-4 bg-emerald-300 rounded-2xl flex flex-col items-center w-fit drop-shadow-xl flex gap-4">
+          className="p-4 bg-zinc-300 rounded-2xl flex flex-col items-center w-fit drop-shadow-xl flex gap-4">
           <p className="text-lg" >{message.message.body}</p>
         </div>
       </div>
@@ -63,14 +75,51 @@ const MessageView = (message: MessageWithUser) => {
   )
 }
 
-
-const Home: NextPage = () => {
+const Messages = () => {
   const user = useUser()
   const {data, isLoading} = api.message.getAll.useQuery()
 
-  if (!user) return null
-
   if (isLoading) return <div className="bg-zinc-900 w-screen h-screen flex items-center justify-center"><Loader widthHeight="w-[100px] h-[100px]" /></div>
+
+  return (
+    <section className="relative w-[50%] bg-zinc-200 h-96 overflow-scroll rounded-2xl grid">
+    <div className="flex flex-col gap-8 bottom-10 self-end mb-4">
+      {data?.map((message) => {
+        if (user.isSignedIn && user.user.id === message.author?.id) {
+         return (
+          <div className="flex flex-row-reverse">
+            <div className="mr-6"><MessageView key={message.message.id} {...message} /></div>
+          </div>
+          
+        )}
+
+        if (user.isSignedIn && user.user.id !== message.author?.id) {
+          return (
+            <div>
+              <div className="ml-6"><MessageView key={message.message.id} {...message} /></div>
+            </div>
+           
+         )}
+
+        return (
+          <div>
+            <div className="ml-6"><MessageView key={message.message.id} {...message} /></div>
+          </div>
+        )
+      })}
+    </div>
+  </section>
+  )
+}
+
+
+const Home: NextPage = () => {
+  const user = useUser()
+
+  if (!user.isLoaded) return <div/>
+
+  // fast load data
+  api.message.getAll.useQuery()
 
   return (
     <>
@@ -97,33 +146,7 @@ const Home: NextPage = () => {
           </SignOutButton>
         }
         </div>
-        <section className="relative w-[50%] bg-zinc-200 h-96 overflow-scroll rounded-2xl grid">
-          <div className="flex flex-col gap-8 bottom-10 self-end mb-4">
-            {data?.map((message) => {
-              if (user.isSignedIn && user.user.id === message.author?.id) {
-               return (
-                <div className="flex flex-row-reverse">
-                  <div className="mr-6"><MessageView key={message.message.id} {...message} /></div>
-                </div>
-                
-              )}
-
-              if (user.isSignedIn && user.user.id !== message.author?.id) {
-                return (
-                  <div>
-                    <div className="ml-6"><MessageView key={message.message.id} {...message} /></div>
-                  </div>
-                 
-               )}
-
-              return (
-                <div>
-                  <div className="ml-6"><MessageView key={message.message.id} {...message} /></div>
-                </div>
-              )
-            })}
-          </div>
-        </section>
+        <Messages />
         {user.isSignedIn &&
         <div className="bg-zinc-200 mt-4 w-[50%] p-4 rounded-2xl">
           <PostMessageWizard />
