@@ -7,6 +7,7 @@ import relativeTime from "dayjs/plugin/relativeTime"
 import Image from 'next/image'
 import { Loader } from "../components/loader"
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 dayjs.extend(relativeTime)
 
@@ -20,6 +21,14 @@ const PostMessageWizard = () => {
     onSuccess: () => {
       setInput("")
       ctx.message.getAll.invalidate()
+    },
+    onError: (e) => {
+      const errorMsg = e.data?.zodError?.fieldErrors.body
+      if (errorMsg && errorMsg[0]) {
+        toast.error(errorMsg[0])
+      } else {
+        toast.error("Someting went wrong.")
+      }
     }
   })
 

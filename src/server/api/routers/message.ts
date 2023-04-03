@@ -49,7 +49,14 @@ export const messagesRouter = createTRPCRouter({
   }),
 
   create: privateProcedure
-    .input(z.object({ body: z.string().min(1).max(255) }))
+    .input(
+      z.object({
+        body: z
+          .string()
+          .min(1, { message: 'message too short' })
+          .max(255, { message: 'message too long' }),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.userId;
 

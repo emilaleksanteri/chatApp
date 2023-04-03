@@ -5,6 +5,7 @@ import { api } from "~/utils/api";
 import "~/styles/globals.css";
 
 import { ClerkProvider } from '@clerk/nextjs';
+import { Toaster } from "react-hot-toast";
 
 
 const MyApp: AppType = ({
@@ -13,6 +14,7 @@ const MyApp: AppType = ({
 }) => {
   return (
     <ClerkProvider {...pageProps}>
+      <Toaster />
       <Component {...pageProps} />
     </ClerkProvider>
   );
