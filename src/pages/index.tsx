@@ -6,12 +6,13 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime"
 import Image from 'next/image'
 import { Loader } from "../components/loader"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 dayjs.extend(relativeTime)
 
 const PostMessageWizard = () => {
+  const wsConnection = new WebSocket("ws://localhost:3003")
   const { user } = useUser()
   const [input, setInput] = useState("")
 
@@ -19,8 +20,10 @@ const PostMessageWizard = () => {
 
   const { mutate, isLoading: isPosting } = api.message.create.useMutation({
     onSuccess: () => {
-      setInput("")
       ctx.message.getAll.invalidate()
+      wsConnection.send(input)
+      setInput("")
+
     },
     onError: (e) => {
       const errorMsg = e.data?.zodError?.fieldErrors.body
@@ -118,8 +121,19 @@ const MessageView = (message: MessageWithUser) => {
 }
 
 const Messages = () => {
+  const wsConnection = new WebSocket("ws://localhost:3003")
   const user = useUser()
   const {data, isLoading} = api.message.getAll.useQuery()
+  const [ws, setWs] = useState<WebSocket | null >(null)
+
+  useEffect(() => {
+    wsConnection.onerror = e => console.log(e)
+    wsConnection.onopen = () => setWs(wsConnection)
+    wsConnection.onmessage = msg => {
+      console.log("message: ", msg)
+      window.alert(msg.data)
+    }
+  }, [])
 
   if (isLoading) return <div className="bg-zinc-900 w-screen h-screen flex items-center justify-center"><Loader widthHeight="w-[100px] h-[100px]" /></div>
 
