@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime"
 import Image from 'next/image'
 import { Loader } from "../components/loader"
-import { useCallback, useEffect, useRef, useState } from "react";
+import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 
 dayjs.extend(relativeTime)
@@ -23,7 +23,6 @@ const PostMessageWizard = () => {
       ctx.message.getAll.invalidate()
       wsConnection.send(input)
       setInput("")
-
     },
     onError: (e) => {
       const errorMsg = e.data?.zodError?.fieldErrors.body
@@ -120,6 +119,8 @@ const MessageView = (message: MessageWithUser) => {
   )
 }
 
+type ScrollBottom = () => void
+
 const Messages = () => {
   const ctx = api.useContext()
   const wsConnection = new WebSocket("ws://localhost:3003")
@@ -127,7 +128,7 @@ const Messages = () => {
   const {data, isLoading} = api.message.getAll.useQuery()
   const [ws, setWs] = useState<WebSocket | null >(null)
 
-  const scrollTargetRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     wsConnection.onerror = e => console.log(e)
@@ -137,21 +138,10 @@ const Messages = () => {
     }
   }, [])
 
-  const scrollToBottomOfList = useCallback(() => {
-    if (scrollTargetRef.current == null) {
-      return;
-    }
-
-    scrollTargetRef.current.scrollIntoView({
-      behavior: 'smooth',
-      block: 'end',
-    });
-  }, [scrollTargetRef]);
-
   useEffect(() => {
-    scrollToBottomOfList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    bottomRef.current?.scrollIntoView({behavior: 'smooth', block: 'end',});
+  }, [data])
+
 
   if (isLoading) return <div className="bg-zinc-900 w-screen h-screen flex items-center justify-center"><Loader widthHeight="w-[100px] h-[100px]" /></div>
 
@@ -161,7 +151,7 @@ const Messages = () => {
       {data?.map((message) => {
         if (user.isSignedIn && user.user.id === message.author?.id) {
          return (
-          <div className="flex flex-row-reverse">
+          <div className="flex flex-row-reverse" key={message.message.id}>
             <div className="mr-6"><MessageView key={message.message.id} {...message} /></div>
           </div>
           
@@ -169,18 +159,19 @@ const Messages = () => {
 
         if (user.isSignedIn && user.user.id !== message.author?.id) {
           return (
-            <div>
+            <div key={message.message.id} >
               <div className="ml-6"><MessageView key={message.message.id} {...message} /></div>
             </div>
            
          )}
 
         return (
-          <div>
+          <div key={message.message.id} >
             <div className="ml-6"><MessageView key={message.message.id} {...message} /></div>
           </div>
         )
       })}
+      <div ref={bottomRef} />
     </div>
   </section>
   )
@@ -192,8 +183,6 @@ const Home: NextPage = () => {
 
   if (!user.isLoaded) return <div/>
 
-  // fast load data
-  api.message.getAll.useQuery()
 
   return (
     <>
