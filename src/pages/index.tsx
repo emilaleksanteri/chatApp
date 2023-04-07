@@ -38,11 +38,22 @@ const PostMessageWizard = () => {
         <Image width={80} height={80} src={user.profileImageUrl} alt="Profile Picture" className="w-[80px] h-[80px] rounded-full drop-shadow-lg border-4 border-emerald-300" />
         <div className="ml-8 w-full">
           <div className="w-full flex items-center gap-8" >
-            <input placeholder="message..." className="w-[90%] p-4 overflow-scroll bg-inherit border-2 border-zinc-300 rounded-2xl outline-none"
+            <textarea placeholder="message..." className="w-[90%] p-4 overflow-scroll bg-inherit border-2 border-zinc-300 rounded-2xl outline-none"
               value={input}
-              type="text"
+              name="text"
               onChange={(e) => setInput(e.target.value)}
+              rows={input.split(/\r|\n/).length}
+              id="text"
+              autoFocus
               disabled={isPosting}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (input !== "") {
+                    mutate({ body: input });
+                  }
+                }
+              }}
             />
             <button className="bg-emerald-300 text-xl p-4 rounded-2xl drop-shadow-lg pl-6 pr-6 font-bold"
               onClick={() => mutate({ body: input })}
