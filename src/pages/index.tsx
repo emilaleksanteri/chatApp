@@ -121,6 +121,7 @@ const MessageView = (message: MessageWithUser) => {
 }
 
 const Messages = () => {
+  const ctx = api.useContext()
   const wsConnection = new WebSocket("ws://localhost:3003")
   const user = useUser()
   const {data, isLoading} = api.message.getAll.useQuery()
@@ -130,8 +131,7 @@ const Messages = () => {
     wsConnection.onerror = e => console.log(e)
     wsConnection.onopen = () => setWs(wsConnection)
     wsConnection.onmessage = msg => {
-      console.log("message: ", msg)
-      window.alert(msg.data)
+      ctx.message.getAll.invalidate()
     }
   }, [])
 
