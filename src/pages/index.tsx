@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime"
 import Image from 'next/image'
 import { Loader } from "../components/loader"
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 
 dayjs.extend(relativeTime)
@@ -127,6 +127,8 @@ const Messages = () => {
   const {data, isLoading} = api.message.getAll.useQuery()
   const [ws, setWs] = useState<WebSocket | null >(null)
 
+  const scrollTargetRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     wsConnection.onerror = e => console.log(e)
     wsConnection.onopen = () => setWs(wsConnection)
@@ -134,6 +136,22 @@ const Messages = () => {
       ctx.message.getAll.invalidate()
     }
   }, [])
+
+  const scrollToBottomOfList = useCallback(() => {
+    if (scrollTargetRef.current == null) {
+      return;
+    }
+
+    scrollTargetRef.current.scrollIntoView({
+      behavior: 'smooth',
+      block: 'end',
+    });
+  }, [scrollTargetRef]);
+
+  useEffect(() => {
+    scrollToBottomOfList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (isLoading) return <div className="bg-zinc-900 w-screen h-screen flex items-center justify-center"><Loader widthHeight="w-[100px] h-[100px]" /></div>
 
