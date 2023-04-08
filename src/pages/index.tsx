@@ -6,13 +6,13 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime"
 import Image from 'next/image'
 import { Loader } from "../components/loader"
-import { RefObject, useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 
 dayjs.extend(relativeTime)
 
 const PostMessageWizard = () => {
-  const wsConnection = new WebSocket("ws://localhost:3003")
+  const wsConnection = new WebSocket("wss://purple-mountain-3507.fly.dev")
   const { user } = useUser()
   const [input, setInput] = useState("")
 
@@ -123,7 +123,7 @@ type ScrollBottom = () => void
 
 const Messages = () => {
   const ctx = api.useContext()
-  const wsConnection = new WebSocket("ws://localhost:3003")
+  const wsConnection = new WebSocket("wss://purple-mountain-3507.fly.dev")
   const user = useUser()
   const {data, isLoading} = api.message.getAll.useQuery()
   const [ws, setWs] = useState<WebSocket | null >(null)
