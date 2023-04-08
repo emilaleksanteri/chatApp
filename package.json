@@ -3,13 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "next build && tsc --project tsconfig.server.json",
-    "dev:next": "next dev",
+    "build": "next build",
+    "dev": "next dev",
     "postinstall": "prisma generate",
     "lint": "next lint",
-    "start": "cross-env NODE_ENV=production node dist/server.js",
-    "dev:mon": "nodemon",
-    "dev": "concurrently --kill-others \"npm run dev:mon\" \"npm run dev:next\""
+    "start": "next start"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.14.0",
