@@ -8,11 +8,15 @@ import Image from 'next/image'
 import { Loader } from "../components/loader"
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
+let URL = ""
+if (process.env.NEXT_PUBLIC_WEBSOCKET_URL) {
+  URL = process.env.NEXT_PUBLIC_WEBSOCKET_URL
+}
 
 dayjs.extend(relativeTime)
 
 const PostMessageWizard = () => {
-  const wsConnection = new WebSocket("wss://purple-mountain-3507.fly.dev")
+  const wsConnection = new WebSocket(URL)
   const { user } = useUser()
   const [input, setInput] = useState("")
 
@@ -123,7 +127,7 @@ type ScrollBottom = () => void
 
 const Messages = () => {
   const ctx = api.useContext()
-  const wsConnection = new WebSocket("wss://purple-mountain-3507.fly.dev")
+  const wsConnection = new WebSocket(URL)
   const user = useUser()
   const {data, isLoading} = api.message.getAll.useQuery()
   const [ws, setWs] = useState<WebSocket | null >(null)
