@@ -14,7 +14,7 @@ const getBaseUrl = () => {
     process.env.NEXT_PUBLIC_WEBSOCKET_URL &&
     process.env.NODE_ENV !== 'development'
   )
-    return `wss://${process.env.NEXT_PUBLIC_WEBSOCKET_URL}`; // SSR should use vercel url
+    return `${process.env.NEXT_PUBLIC_WEBSOCKET_URL}`; // SSR should use vercel url
   return `ws://localhost:3003`; // dev SSR should use localhost
 };
 
