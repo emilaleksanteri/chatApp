@@ -53,7 +53,7 @@ const PostMessageWizard = (props: {sendMessage: (input: string) => void, theyTyp
               name="text"
               onChange={(e) => {
                   setInput(e.target.value)
-                  if (input.length % 5 === 0 || input.length < 3 && input.length > 1) {
+                  if (input.length % 5 === 0 || (input.length < 3 && input.length > 1)) {
                       props.theyTyping(user.username ? user.username: 'anonymous')
                   }
                 }
@@ -217,18 +217,16 @@ const ConnectionComponent = () => {
 
   const intreval = setInterval(() => {
     setTyping("")
-  }, 5000)
+  }, 4000)
 
   const theyTyping = (user: string): void => {
     wsConnectionTyping.send(user)
-    clearInterval(intreval)
   }
 
   const whoIsTyping = (): void => {
     wsConnectionTyping.onmessage = (msg) => {
       const user = msg.data + ' is typing...'
       setTyping(user)
-      clearInterval(intreval)
     }
   }
 
