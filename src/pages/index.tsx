@@ -8,15 +8,19 @@ import Image from 'next/image'
 import { Loader } from "../components/loader"
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-let URL = ""
-if (process.env.NEXT_PUBLIC_WEBSOCKET_URL) {
-  URL = process.env.NEXT_PUBLIC_WEBSOCKET_URL
-}
+
+const getBaseUrl = () => {
+  if (
+    process.env.NEXT_PUBLIC_WEBSOCKET_URL &&
+    process.env.NODE_ENV !== 'development'
+  )
+    return `wss://${process.env.NEXT_PUBLIC_WEBSOCKET_URL}`; // SSR should use vercel url
+  return `ws://localhost:3003`; // dev SSR should use localhost
+};
 
 dayjs.extend(relativeTime)
 
-const PostMessageWizard = () => {
-  const wsConnection = new WebSocket(URL)
+const PostMessageWizard = (props: {sendMessage: (input: string) => void, theyTyping: (user: string) => void}) => {
   const { user } = useUser()
   const [input, setInput] = useState("")
 
@@ -25,7 +29,7 @@ const PostMessageWizard = () => {
   const { mutate, isLoading: isPosting } = api.message.create.useMutation({
     onSuccess: () => {
       ctx.message.getAll.invalidate()
-      wsConnection.send(input)
+      props.sendMessage(input)
       setInput("")
     },
     onError: (e) => {
@@ -47,7 +51,13 @@ const PostMessageWizard = () => {
             <textarea placeholder="message..." className="w-[90%] p-4 overflow-scroll bg-inherit border-2 border-zinc-300 rounded-2xl outline-none"
               value={input}
               name="text"
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => {
+                  setInput(e.target.value)
+                  if (input.length % 5 === 0 || input.length < 3) {
+                      props.theyTyping(user.username ? user.username: 'anonymous')
+                  }
+                }
+              }
               rows={input.split(/\r|\n/).length}
               id="text"
               autoFocus
@@ -62,7 +72,9 @@ const PostMessageWizard = () => {
               }}
             />
             <button className="bg-emerald-300 text-xl p-4 rounded-2xl drop-shadow-lg pl-6 pr-6 font-bold"
-              onClick={() => mutate({ body: input })}
+              onClick={() => {
+                mutate({ body: input })
+              }}
             >
               {isPosting && <Loader widthHeight="h-[24px] w-[24px]" />}
               {!isPosting &&
@@ -104,7 +116,10 @@ const MessageView = (message: MessageWithUser) => {
           }
           {message.author?.id === user.user.id && <Image width={48} height={48} src={message.author.profileImageUrl} alt="profile" className="w-12 h-12 rounded-full text-xs drop-shadow-lg" />}
         </div>
-        <p className="text-[11px] text-zinc-400 mt-2 ml-1">{dayjs(message.message.sentAt).fromNow()}</p>
+        {message.author?.id !== user.user.id
+          ? <p className="text-[11px] text-zinc-400 mt-2 ml-1 text-left">{dayjs(message.message.sentAt).fromNow()}</p>
+          : <p className="text-[11px] text-zinc-400 mt-2 ml-1 text-right">{dayjs(message.message.sentAt).fromNow()}</p>
+        }
       </div>
     )
   }
@@ -123,40 +138,33 @@ const MessageView = (message: MessageWithUser) => {
   )
 }
 
-type ScrollBottom = () => void
-
-const Messages = () => {
-  const ctx = api.useContext()
-  const wsConnection = new WebSocket(URL)
+const Messages = (props: {listenToMessages: () => void, whoIsTyping: () => void, typing: string}) => {
   const user = useUser()
   const {data, isLoading} = api.message.getAll.useQuery()
-  const [ws, setWs] = useState<WebSocket | null >(null)
 
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    wsConnection.onerror = e => console.log(e)
-    wsConnection.onopen = () => setWs(wsConnection)
-    wsConnection.onmessage = msg => {
-      ctx.message.getAll.invalidate()
-    }
+    props.listenToMessages()
+    props.whoIsTyping()
   }, [])
+
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({behavior: 'smooth', block: 'end',});
   }, [data])
 
 
-  if (isLoading) return <div className="bg-zinc-900 w-screen h-screen flex items-center justify-center"><Loader widthHeight="w-[100px] h-[100px]" /></div>
+  if (isLoading) return <div className="bg-zinc-900 w-screen h-[300px] flex items-center justify-center"><Loader widthHeight="w-[100px] h-[100px]" /></div>
 
   return (
-    <section className="relative w-[50%] bg-zinc-200 h-96 overflow-scroll rounded-2xl grid">
-    <div className="flex flex-col gap-8 bottom-10 self-end mb-4">
+    <section className="relative w-[50%] bg-zinc-200 h-[700px] overflow-scroll rounded-2xl grid">
+    <div className="flex flex-col gap-8 bottom-10 self-end -mb-2 mt-4">
       {data?.map((message) => {
         if (user.isSignedIn && user.user.id === message.author?.id) {
          return (
           <div className="flex flex-row-reverse" key={message.message.id}>
-            <div className="mr-6"><MessageView key={message.message.id} {...message} /></div>
+            <div className="mr-6 ml-6"><MessageView key={message.message.id} {...message} /></div>
           </div>
           
         )}
@@ -164,26 +172,83 @@ const Messages = () => {
         if (user.isSignedIn && user.user.id !== message.author?.id) {
           return (
             <div key={message.message.id} >
-              <div className="ml-6"><MessageView key={message.message.id} {...message} /></div>
+              <div className="ml-6 mr-6"><MessageView key={message.message.id} {...message} /></div>
             </div>
            
          )}
 
         return (
           <div key={message.message.id} >
-            <div className="ml-6"><MessageView key={message.message.id} {...message} /></div>
+            <div className="ml-6 mr-6"><MessageView key={message.message.id} {...message} /></div>
           </div>
         )
       })}
+      <div>
+        <p className="text-lg text-zinc-500 ml-2">{props.typing}</p>
+      </div>
       <div ref={bottomRef} />
     </div>
   </section>
   )
 }
 
+const ConnectionComponent = () => {
+  const user = useUser()
+
+  const URL = getBaseUrl()
+  const wsConnectionChat = new WebSocket(`${URL}/chat`)
+  const wsConnectionTyping = new WebSocket(`${URL}/typing`)
+
+  const [typing, setTyping] = useState('')
+
+  const ctx = api.useContext()
+
+  const sendMessage = (input: string): void => {
+    wsConnectionChat.send(input)
+    setTyping("")
+  }
+
+  const listenToMessages = (): void => {
+    wsConnectionChat.onerror = e => console.log(e)
+    wsConnectionChat.onmessage = msg => {
+      ctx.message.getAll.invalidate()
+    }
+  }
+
+  const intreval = setInterval(() => {
+    setTyping("")
+  }, 5000)
+
+  const theyTyping = (user: string): void => {
+    wsConnectionTyping.send(user)
+    clearInterval(intreval)
+  }
+
+  const whoIsTyping = (): void => {
+    wsConnectionTyping.onmessage = (msg) => {
+      const user = msg.data + ' is typing...'
+      setTyping(user)
+    }
+  }
+
+  return (
+    <div className="w-full flex flex-col justify-center items-center">
+      <Messages listenToMessages={listenToMessages} whoIsTyping={whoIsTyping} typing={typing} />
+        {user.isSignedIn &&
+        <div className="bg-zinc-200 mt-4 w-[50%] p-4 rounded-2xl">
+          <PostMessageWizard sendMessage={sendMessage} theyTyping={theyTyping} />
+        </div>
+        }
+    </div>
+  )
+
+}
+
+
 
 const Home: NextPage = () => {
   const user = useUser()
+
 
   if (!user.isLoaded) return <div/>
 
@@ -213,12 +278,7 @@ const Home: NextPage = () => {
           </SignOutButton>
         }
         </div>
-        <Messages />
-        {user.isSignedIn &&
-        <div className="bg-zinc-200 mt-4 w-[50%] p-4 rounded-2xl">
-          <PostMessageWizard />
-        </div>
-        }
+        <ConnectionComponent />
       </main>
     </>
   );
