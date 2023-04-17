@@ -30,17 +30,53 @@ const getBaseUrl = () => {
 dayjs.extend(relativeTime)
 
 
-const AudioEffects = (props: {effect: string, sounds: {
+const AudioEffects = (props: {effect: number | undefined, sounds: {
   file: string;
   name: string;
-}[], sendSoundToAll: (file: string) => void, listenToSounds: () => void}) => {
+}[], sendSoundToAll: (file: number) => void, setEffect: any}) => {
+
+  const [play1] = useSound(angry)
+  const [play2] = useSound(cartoonFunny)
+  const [play3] = useSound(flute)
+  const [play4] = useSound(hehe)
+  const [play5] = useSound(passed)
+  const [play6] = useSound(running)
+  const [play7] = useSound(surprise)
+
+  useEffect(() => {
+    if (props.effect) {
+      if (props.effect === 0) {
+        play1()
+      }
+      if (props.effect === 1) {
+        play2()
+      }
+      if (props.effect === 2) {
+        play3()
+      }
+      if (props.effect === 3) {
+        play4()
+      }
+      if (props.effect === 4) {
+        play5()
+      }
+      if (props.effect === 5) {
+        play6()
+      }
+      if (props.effect === 6) {
+        play7()
+      }
+    }
+    props.setEffect(undefined)
+  }, [props.effect])
+
 
   return (
     <div>
-      {props.sounds.map((sound) => (
+      {props.sounds.map((sound, i) => (
         <button key={sound.name} className="text-white mx-2 border-2" onClick={() => {
-          if (props.effect.length === 0) {
-            props.sendSoundToAll(sound.file)
+          if (!props.effect) {
+            props.sendSoundToAll(i)
           }
         }}>{sound.name}</button>
       ))}
@@ -234,15 +270,13 @@ const ConnectionComponent = () => {
 
   const ctx = api.useContext()
 
-  const [effect, setEffect] = useState("")
+  const [effect, setEffect] = useState<number | undefined>(undefined)
   const sounds = [
     {file: angry, name: "angry"}, {file: cartoonFunny, name: "cartoonFunny"}, 
     {file: flute, name: "flute"}, {file: hehe, name: "hehe"}, 
     {file: passed, name: "passed"}, {file: running, name: "running"}, 
     {file: slurp, name: "slurp"}, {file: surprise, name: "surprise"}
   ]
-
-  const [play] = useSound(effect)
 
   const sendMessage = (input: string): void => {
     wsConnectionChat.send(input)
@@ -273,19 +307,16 @@ const ConnectionComponent = () => {
     }
   }
 
-  const sendSoundToAll = (file: string): void => {
-    wsConnectionAudio.send(file)
+  const sendSoundToAll = (file: number): void => {
+    wsConnectionAudio.send(String(file))
   }
 
-  const listenToSounds = (): void => {
-    wsConnectionAudio.onmessage = (msg) => {
-      // gets filename
-      setEffect(msg.data)
+  wsConnectionAudio.addEventListener("message", (event) => {
+    wsConnectionAudio.onmessage = msg => {
+      const num = Number(msg.data)
+      setEffect(num)
     }
-    if (effect.length > 0) {
-      play()
-    }
-  }
+  })
 
 
   return (
@@ -297,7 +328,7 @@ const ConnectionComponent = () => {
             <PostMessageWizard sendMessage={sendMessage} theyTyping={theyTyping} typing={typing} />
           </div>
           <div>
-            <AudioEffects effect={effect} sounds={sounds} sendSoundToAll={sendSoundToAll} listenToSounds={listenToSounds} />
+            <AudioEffects effect={effect} sounds={sounds} sendSoundToAll={sendSoundToAll} setEffect={setEffect} />
           </div>
         </div>
         }
