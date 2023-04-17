@@ -8,6 +8,15 @@ import Image from 'next/image'
 import { Loader } from "../components/loader"
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
+import useSound from 'use-sound';
+import angry from "../../public/static/angry.mp3"
+import cartoonFunny from "../../public/static/cartoonFunny.mp3"
+import flute from "../../public/static/flute.mp3"
+import hehe from "../../public/static/hehe.mp3"
+import passed from "../../public/static/passed.mp3"
+import running from "../../public/static/running.mp3"
+import slurp from "../../public/static/slurp.mp3"
+import surprise from "../../public/static/surprise.mp3"
 
 const getBaseUrl = () => {
   if (
@@ -15,14 +24,34 @@ const getBaseUrl = () => {
     process.env.NODE_ENV !== 'development'
   )
     return `${process.env.NEXT_PUBLIC_WEBSOCKET_URL}`; // SSR should use vercel url
-  return `ws://localhost:3003`; // dev SSR should use localhost
+  return `ws://localhost:3001`; // dev SSR should use localhost
 };
 
 dayjs.extend(relativeTime)
 
-const PostMessageWizard = (props: {sendMessage: (input: string) => void, theyTyping: (user: string) => void}) => {
+
+const AudioEffects = (props: {effect: string, sounds: {
+  file: string;
+  name: string;
+}[], sendSoundToAll: (file: string) => void, listenToSounds: () => void}) => {
+
+  return (
+    <div>
+      {props.sounds.map((sound) => (
+        <button key={sound.name} className="text-white mx-2 border-2" onClick={() => {
+          if (props.effect.length === 0) {
+            props.sendSoundToAll(sound.file)
+          }
+        }}>{sound.name}</button>
+      ))}
+    </div>
+  )
+}
+
+const PostMessageWizard = (props: {sendMessage: (input: string) => void, theyTyping: (user: string) => void, typing: string}) => {
   const { user } = useUser()
   const [input, setInput] = useState("")
+  const [inputLength, setInputLength] = useState(0)
 
   const ctx = api.useContext()
 
@@ -53,7 +82,8 @@ const PostMessageWizard = (props: {sendMessage: (input: string) => void, theyTyp
               name="text"
               onChange={(e) => {
                   setInput(e.target.value)
-                  if (input.length % 5 === 0 || (input.length < 3 && input.length > 1)) {
+                  if (props.typing.length === 0 && inputLength < input.length) {
+                      setInputLength(input.length)
                       props.theyTyping(user.username ? user.username: 'anonymous')
                   }
                 }
@@ -198,10 +228,21 @@ const ConnectionComponent = () => {
   const URL = getBaseUrl()
   const wsConnectionChat = new WebSocket(`${URL}/chat`)
   const wsConnectionTyping = new WebSocket(`${URL}/typing`)
+  const wsConnectionAudio = new WebSocket(`${URL}/sounds`)
 
   const [typing, setTyping] = useState('')
 
   const ctx = api.useContext()
+
+  const [effect, setEffect] = useState("")
+  const sounds = [
+    {file: angry, name: "angry"}, {file: cartoonFunny, name: "cartoonFunny"}, 
+    {file: flute, name: "flute"}, {file: hehe, name: "hehe"}, 
+    {file: passed, name: "passed"}, {file: running, name: "running"}, 
+    {file: slurp, name: "slurp"}, {file: surprise, name: "surprise"}
+  ]
+
+  const [play] = useSound(effect)
 
   const sendMessage = (input: string): void => {
     wsConnectionChat.send(input)
@@ -220,7 +261,9 @@ const ConnectionComponent = () => {
   }, 4000)
 
   const theyTyping = (user: string): void => {
-    wsConnectionTyping.send(user)
+    setTimeout(() => {
+      wsConnectionTyping.send(user)
+    }, 400)
   }
 
   const whoIsTyping = (): void => {
@@ -230,12 +273,32 @@ const ConnectionComponent = () => {
     }
   }
 
+  const sendSoundToAll = (file: string): void => {
+    wsConnectionAudio.send(file)
+  }
+
+  const listenToSounds = (): void => {
+    wsConnectionAudio.onmessage = (msg) => {
+      // gets filename
+      setEffect(msg.data)
+    }
+    if (effect.length > 0) {
+      play()
+    }
+  }
+
+
   return (
     <div className="w-full flex flex-col justify-center items-center">
       <Messages listenToMessages={listenToMessages} whoIsTyping={whoIsTyping} typing={typing} />
         {user.isSignedIn &&
-        <div className="bg-zinc-200 mt-4 w-[50%] p-4 rounded-2xl">
-          <PostMessageWizard sendMessage={sendMessage} theyTyping={theyTyping} />
+        <div className="flex flex-col w-full items-center gap-6">
+          <div className="bg-zinc-200 mt-4 w-[50%] p-4 rounded-2xl">
+            <PostMessageWizard sendMessage={sendMessage} theyTyping={theyTyping} typing={typing} />
+          </div>
+          <div>
+            <AudioEffects effect={effect} sounds={sounds} sendSoundToAll={sendSoundToAll} listenToSounds={listenToSounds} />
+          </div>
         </div>
         }
     </div>
