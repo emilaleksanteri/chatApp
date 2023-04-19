@@ -10,13 +10,11 @@ import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import useSound from 'use-sound';
 import angry from "../../public/static/angry.mp3"
-import cartoonFunny from "../../public/static/cartoonFunny.mp3"
-import flute from "../../public/static/flute.mp3"
 import hehe from "../../public/static/hehe.mp3"
-import passed from "../../public/static/passed.mp3"
 import running from "../../public/static/running.mp3"
 import slurp from "../../public/static/slurp.mp3"
 import surprise from "../../public/static/surprise.mp3"
+import { ReturnedValue } from "use-sound/dist/types";
 
 const getBaseUrl = () => {
   if (
@@ -24,59 +22,39 @@ const getBaseUrl = () => {
     process.env.NODE_ENV !== 'development'
   )
     return `${process.env.NEXT_PUBLIC_WEBSOCKET_URL}`; // SSR should use vercel url
-  return `ws://localhost:3001`; // dev SSR should use localhost
+  return `ws://localhost:8080`; // dev SSR should use localhost
 };
 
 dayjs.extend(relativeTime)
 
 
 const AudioEffects = (props: {effect: number | undefined, sounds: {
-  file: string;
+  hook: ReturnedValue;
   name: string;
-}[], sendSoundToAll: (file: number) => void, setEffect: any}) => {
-
-  const [play1] = useSound(angry)
-  const [play2] = useSound(cartoonFunny)
-  const [play3] = useSound(flute)
-  const [play4] = useSound(hehe)
-  const [play5] = useSound(passed)
-  const [play6] = useSound(running)
-  const [play7] = useSound(surprise)
+}[], sendSoundToAll: (name: string) => void, setEffect: any}) => {
 
   useEffect(() => {
-    if (props.effect) {
-      if (props.effect === 0) {
-        play1()
-      }
-      if (props.effect === 1) {
-        play2()
-      }
-      if (props.effect === 2) {
-        play3()
-      }
-      if (props.effect === 3) {
-        play4()
-      }
-      if (props.effect === 4) {
-        play5()
-      }
-      if (props.effect === 5) {
-        play6()
-      }
-      if (props.effect === 6) {
-        play7()
+    // nice 0th index in JS is undefined
+    if (props.effect || props.effect === 0) {
+      const play = props.sounds[props.effect]?.hook[0]
+      if (play) {
+        try {
+          play()
+          props.setEffect(undefined)
+        } catch {
+          console.log('error')
+        }
       }
     }
-    props.setEffect(undefined)
   }, [props.effect])
 
 
   return (
-    <div>
-      {props.sounds.map((sound, i) => (
-        <button key={sound.name} className="text-white mx-2 border-2" onClick={() => {
+    <div className="flex gap-2 items-stretch flex-col">
+      {props.sounds.map((sound) => (
+        <button key={sound.name} className="bg-zinc-200 p-2 rounded-xl text-zinc-800 font-bold uppercase hover:bg-emerald-300" onClick={() => {
           if (!props.effect) {
-            props.sendSoundToAll(i)
+            props.sendSoundToAll(sound.name)
           }
         }}>{sound.name}</button>
       ))}
@@ -258,13 +236,24 @@ const Messages = (props: {listenToMessages: () => void, whoIsTyping: () => void,
   )
 }
 
-const ConnectionComponent = () => {
-  const user = useUser()
-
+const Connect = () => {
+  console.log('rendering')
   const URL = getBaseUrl()
   const wsConnectionChat = new WebSocket(`${URL}/chat`)
   const wsConnectionTyping = new WebSocket(`${URL}/typing`)
   const wsConnectionAudio = new WebSocket(`${URL}/sounds`)
+
+  return (
+    <ConnectionComponent wsConnectionChat={wsConnectionChat} wsConnectionTyping={wsConnectionTyping} wsConnectionAudio={wsConnectionAudio} />
+  )
+}
+
+const ConnectionComponent = (props: {
+  wsConnectionChat: WebSocket,
+  wsConnectionTyping: WebSocket,
+  wsConnectionAudio: WebSocket
+}) => {
+  const user = useUser()
 
   const [typing, setTyping] = useState('')
 
@@ -272,20 +261,21 @@ const ConnectionComponent = () => {
 
   const [effect, setEffect] = useState<number | undefined>(undefined)
   const sounds = [
-    {file: angry, name: "angry"}, {file: cartoonFunny, name: "cartoonFunny"}, 
-    {file: flute, name: "flute"}, {file: hehe, name: "hehe"}, 
-    {file: passed, name: "passed"}, {file: running, name: "running"}, 
-    {file: slurp, name: "slurp"}, {file: surprise, name: "surprise"}
+    {hook: useSound(angry), name: "angry"},
+    {hook: useSound(hehe), name: "hehe"}, 
+    {hook: useSound(running), name: "running"}, 
+    {hook: useSound(slurp), name: "slurp"},
+    {hook: useSound(surprise), name: "surprise"}
   ]
 
   const sendMessage = (input: string): void => {
-    wsConnectionChat.send(input)
+    props.wsConnectionChat.send(input)
     setTyping("")
   }
 
   const listenToMessages = (): void => {
-    wsConnectionChat.onerror = e => console.log(e)
-    wsConnectionChat.onmessage = msg => {
+    props.wsConnectionChat.onerror = e => console.log(e)
+    props.wsConnectionChat.onmessage = msg => {
       ctx.message.getAll.invalidate()
     }
   }
@@ -296,25 +286,27 @@ const ConnectionComponent = () => {
 
   const theyTyping = (user: string): void => {
     setTimeout(() => {
-      wsConnectionTyping.send(user)
-    }, 400)
+      props.wsConnectionTyping.send(user)
+    }, 300)
   }
 
   const whoIsTyping = (): void => {
-    wsConnectionTyping.onmessage = (msg) => {
+    props.wsConnectionTyping.onmessage = (msg) => {
       const user = msg.data + ' is typing...'
       setTyping(user)
     }
   }
 
-  const sendSoundToAll = (file: number): void => {
-    wsConnectionAudio.send(String(file))
+  const sendSoundToAll = (name: string): void => {
+    props.wsConnectionAudio.send(name)
   }
 
-  wsConnectionAudio.addEventListener("message", (event) => {
-    wsConnectionAudio.onmessage = msg => {
-      const num = Number(msg.data)
-      setEffect(num)
+  props.wsConnectionAudio.addEventListener("message", (event) => {
+    props.wsConnectionAudio.onmessage = msg => {
+      if (!effect) {
+        const soundIdx = sounds.findIndex(sound => sound.name === msg.data)
+        setEffect(soundIdx)
+      }
     }
   })
 
@@ -327,7 +319,7 @@ const ConnectionComponent = () => {
           <div className="bg-zinc-200 mt-4 w-[50%] p-4 rounded-2xl">
             <PostMessageWizard sendMessage={sendMessage} theyTyping={theyTyping} typing={typing} />
           </div>
-          <div>
+          <div className="absolute right-[20%] top-[4%]">
             <AudioEffects effect={effect} sounds={sounds} sendSoundToAll={sendSoundToAll} setEffect={setEffect} />
           </div>
         </div>
@@ -371,7 +363,7 @@ const Home: NextPage = () => {
           </SignOutButton>
         }
         </div>
-        <ConnectionComponent />
+        <Connect />
       </main>
     </>
   );
