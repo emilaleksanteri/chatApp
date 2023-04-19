@@ -261,7 +261,6 @@ const Messages = (props: {listenToMessages: () => void, whoIsTyping: () => void,
 }
 
 const Connect = () => {
-  console.log('rendering')
   const URL = getBaseUrl()
   const wsConnectionChat = new WebSocket(`${URL}/chat`)
   const wsConnectionTyping = new WebSocket(`${URL}/typing`)
