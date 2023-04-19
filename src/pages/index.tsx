@@ -32,6 +32,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
   hook: ReturnedValue;
   name: string;
 }[], sendSoundToAll: (name: string) => void, setEffect: any}) => {
+  const [showEffects, setShowEffects] = useState(false)
 
   useEffect(() => {
     // nice 0th index in JS is undefined
@@ -50,14 +51,37 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
 
 
   return (
-    <div className="flex gap-2 items-stretch flex-col">
-      {props.sounds.map((sound) => (
-        <button key={sound.name} className="bg-zinc-200 p-2 rounded-xl text-zinc-800 font-bold uppercase hover:bg-emerald-300" onClick={() => {
-          if (!props.effect) {
-            props.sendSoundToAll(sound.name)
-          }
-        }}>{sound.name}</button>
-      ))}
+    <div className="bg-zinc-200 rounded-xl p-2 w-46">
+      <button className="flex gap-2 justify-between mb-2 p-2" onClick={() => setShowEffects(!showEffects)}>
+        <p className="font-bold uppercase ml-4">Sound Effects</p>
+        {
+          showEffects
+          ?
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-4">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+          </svg>
+          :
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-4">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+          </svg>
+
+        }
+        
+
+      </button>
+      {
+        showEffects
+        ? <div className="grid grid-cols-2 items-stretch gap-2">
+            {props.sounds.map((sound) => (
+              <button key={sound.name} className="bg-zinc-200 text-zinc-800 font-bold p-2 uppercase hover:bg-emerald-300 hover:drop-shadow-xl rounded-xl hover:outline hover:outline-1" onClick={() => {
+                if (!props.effect) {
+                  props.sendSoundToAll(sound.name)
+                }
+              }}>{sound.name}</button>
+            ))}
+          </div>
+        : null
+      }
     </div>
   )
 }
@@ -319,7 +343,7 @@ const ConnectionComponent = (props: {
           <div className="bg-zinc-200 mt-4 w-[50%] p-4 rounded-2xl">
             <PostMessageWizard sendMessage={sendMessage} theyTyping={theyTyping} typing={typing} />
           </div>
-          <div className="absolute right-[20%] top-[4%]">
+          <div className="absolute right-[8%] top-[4%]">
             <AudioEffects effect={effect} sounds={sounds} sendSoundToAll={sendSoundToAll} setEffect={setEffect} />
           </div>
         </div>
