@@ -594,15 +594,18 @@ const Home: NextPage = () => {
         <title>ChatApp</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen bg-zinc-900 flex flex-col items-center">
+      <main className="flex min-h-screen bg-zinc-800 flex flex-col items-center">
         <div className="text-zinc-100">
         {
         !user.isSignedIn && 
-          <SignInButton mode="modal">
-            <button className="btn">
-              Sign in
-            </button>
-          </SignInButton>
+          <div className="w-screen h-screen homeBg flex flex-col justify-center items-center">
+            <h1 className="text-4xl font-bold mb-10">Interactive Chatting 💬</h1>
+            <SignInButton mode="modal">
+              <button className="text-zinc-800 p-10 bg-green-400 w-[40%] rounded-xl text-3xl font-bold drop-shadow-xl">
+                Sign in
+              </button>
+            </SignInButton>
+          </div>
         }
         {
           !!user.isSignedIn &&
