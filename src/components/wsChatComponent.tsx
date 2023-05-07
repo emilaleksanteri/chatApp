@@ -364,6 +364,8 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
         }
       }
     })
+
+    const loaderData = new Array(2).fill(0)
   
     return (
       <div className="w-full h-full flex flex-col">
@@ -380,6 +382,19 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
           <div className="relative w-full bg-zinc-100 overflow-scroll flex flex-col h-full items-center">
             <p className="w-[60%] text-3xl mt-10">Members:</p>
             <div className="w-[60%] mt-4 drop-shadow-xl p-2 overflow-scroll h-fit rounded-xl z-10 outline outline-2 outline-green-300">
+            {
+                isLoading &&
+                <div className="">
+                 {
+                   loaderData?.map((member) => (
+                       <div key={Math.floor(Math.random() * 1000000)} className="flex items-center gap-4 p-2">
+                         <div className="greenLoading p-10 rounded-full" />
+                         <p className="greenLoading p-6 w-[60%] rounded-lg"></p>
+                       </div>
+                   ))
+                 }
+                </div>
+              }
               {
                !isLoading &&
                <div className="">
