@@ -610,7 +610,7 @@ const Home: NextPage = () => {
         {
           !!user.isSignedIn &&
           <SignOutButton>
-            <button className="btn w-screen bg-green-300 p-2 text-zinc-800 font-bold">
+            <button className="btn w-screen signOutGradient p-2 text-zinc-800 font-bold">
               SIGN OUT
             </button>
           </SignOutButton>
