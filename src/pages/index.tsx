@@ -20,7 +20,7 @@ const Home: NextPage = () => {
         <title>ChatApp</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen bg-zinc-800 flex flex-col items-center">
+      <main className="flex h-full bg-zinc-800 flex flex-col items-center">
         <div className="text-zinc-100">
         {
         !user.isSignedIn && 
