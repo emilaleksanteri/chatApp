@@ -27,7 +27,7 @@ const Home: NextPage = () => {
           <div className="w-screen h-screen homeBg flex flex-col justify-center items-center">
             <h1 className="text-4xl font-bold mb-10">Interactive Chatting 💬</h1>
             <SignInButton mode="modal">
-              <button className="text-zinc-800 p-10 bg-green-400 w-[40%] rounded-xl text-3xl font-bold drop-shadow-xl">
+              <button className="text-zinc-800 p-10 signOutGradient w-[40%] rounded-xl text-3xl font-bold drop-shadow-xl">
                 Sign in
               </button>
             </SignInButton>

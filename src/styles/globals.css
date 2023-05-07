@@ -32,6 +32,28 @@
 	height: auto;
 }
 
+.signOutGradient:hover {
+	background:rgb(74 222 128);
+	height: auto;
+	animation: shake 2s ease infinite;
+}
+
+@keyframes shake {
+	0% {
+		transform: rotate(0);
+	}
+	25% {
+		transform: rotate(5deg);
+	}
+	75% {
+		transform: rotate(-5deg);
+	}
+	100% {
+		transform: rotate(0);
+	}
+
+}
+
 @keyframes gradient {
 	0% {
 		background-position: 0% 50%;
