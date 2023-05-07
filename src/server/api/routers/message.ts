@@ -30,9 +30,16 @@ const ratelimit = new Ratelimit({
 });
 
 export const messagesRouter = createTRPCRouter({
-  getAll: publicProcedure.query(async ({ ctx }) => {
+  // takes in chatId
+  getAll: privateProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const messages = await ctx.prisma.message.findMany({
       take: 100,
+      where: {
+        chatId: input,
+      },
+      include: {
+        chat: true,
+      },
     });
 
     const users = (
@@ -55,6 +62,7 @@ export const messagesRouter = createTRPCRouter({
           .string()
           .min(1, { message: 'message too short' })
           .max(255, { message: 'message too long' }),
+        chatId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -67,6 +75,7 @@ export const messagesRouter = createTRPCRouter({
         data: {
           userId,
           body: input.body,
+          chatId: input.chatId,
         },
       });
 

@@ -1,5 +1,5 @@
 export const Loader = (props: {widthHeight: string}) => {
-    const cn = props.widthHeight + "text-zinc-600 animate-spin dark:text-zinc-600 fill-emerald-500"
+    const cn = props.widthHeight + " text-zinc-700 animate-spin dark:text-zinc-300 fill-emerald-300"
     return (
       <div role="status">
         <svg aria-hidden="true" className={cn} viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">

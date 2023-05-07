@@ -23,9 +23,21 @@ model Message {
     @@index([chatId])
 }
 
+// figure out the schema for chats and users
 model Chat {
-    id        String    @id @default(cuid())
-    createdAt DateTime  @default(now())
-    messages  Message[]
-    chatName  String    @db.VarChar(30)
+    id           String         @id @default(cuid())
+    createdAt    DateTime       @default(now())
+    messages     Message[]
+    chatName     String         @db.VarChar(30)
+    Participants Participants[]
+}
+
+model Participants {
+    id     String @id @default(cuid())
+    userId String
+    Chat   Chat   @relation(fields: [chatId], references: [id])
+    chatId String
+
+    @@index([userId])
+    @@index([chatId])
 }
