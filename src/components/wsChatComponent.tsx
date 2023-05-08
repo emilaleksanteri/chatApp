@@ -110,7 +110,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
   
     if (user) {
       return (
-        <div className="flex items-center w-full h-fit">
+        <div className="flex items-center w-full h-fit sm:p-4 p-0">
           <Image width={80} height={80} src={user.profileImageUrl} alt="Profile Picture" className="sm:w-[80px] sm:h-[80px] sm:inline hidden rounded-full drop-shadow-lg border-4 border-emerald-300" />
           <div className="sm:ml-8 ml-4 w-full">
             <div className="w-full flex items-center sm:gap-8 gap-2" >
