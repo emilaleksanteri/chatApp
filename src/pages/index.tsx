@@ -20,7 +20,7 @@ const Home: NextPage = () => {
         <title>ChatApp</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex h-screen w-screen bg-zinc-100 flex flex-col items-center">
+      <main className="flex h-[95vh] w-screen bg-zinc-100 flex flex-col items-center">
         <div className="text-zinc-100">
         {
         !user.isSignedIn && 
@@ -33,16 +33,14 @@ const Home: NextPage = () => {
             </SignInButton>
           </div>
         }
-        {
-          !!user.isSignedIn &&
+        </div>
+        { !!user.isSignedIn &&
+        <div className="flex flex-col h-[100%] w-full">
           <SignOutButton>
             <button className="btn w-screen signOutGradient p-2 text-zinc-800 font-bold">
               SIGN OUT
             </button>
           </SignOutButton>
-        }
-        </div>
-        { !!user.isSignedIn &&
           <div className="flex sm:flex-row flex-col h-full w-full">
             <div className={!!openChat.open ? "lg:w-[40%] sm:w-[70%] w-100% h-full sm:inline hidden" : "lg:w-[40%] sm:w-[70%] w-100% h-full"}>
               <ChatsNavigation openChat={openChat} setOpenChat={setOpenChat} />
@@ -52,6 +50,7 @@ const Home: NextPage = () => {
               : <div className="bgGridThing w-full h-full sm:flex hidden"></div>
             }
           </div>
+        </div> 
         }
       </main>
     </>

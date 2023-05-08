@@ -110,7 +110,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
   
     if (user) {
       return (
-        <div className="flex items-center w-full h-fit sm:p-4 p-0">
+        <div className="flex items-center w-full h-full p-4 border-2">
           <Image width={80} height={80} src={user.profileImageUrl} alt="Profile Picture" className="sm:w-[80px] sm:h-[80px] sm:inline hidden rounded-full drop-shadow-lg border-4 border-emerald-300" />
           <div className="sm:ml-8 ml-4 w-full">
             <div className="w-full flex items-center sm:gap-8 gap-2" >
@@ -210,10 +210,10 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
     }, [data])
   
   
-    if (isLoading) return <div className="relative w-full bgCgat overflow-scroll h-[88%] flex items-center justify-center"><Loader widthHeight="w-[100px] h-[100px]" /></div>
+    if (isLoading) return <div className="relative w-full bgCgat overflow-y-scroll h-[78vh] flex items-center justify-center"><Loader widthHeight="w-[100px] h-[100px]" /></div>
   
     return (
-        <section className="relative w-full bgCgat overflow-scroll grid h-[88%]">
+        <section className="relative w-full bgCgat overflow-y-scroll grid h-[78vh]">
           <div className="flex flex-col gap-8 self-end -mb-4 mt-4">
             {data?.map((message) => {
               if (user.isSignedIn && user.user.id === message.author?.id) {
@@ -259,7 +259,9 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
     const wsConnectionAudio = new WebSocket(`${URL}/sounds`)
   
     return (
-      <ConnectionComponent wsConnectionChat={wsConnectionChat} wsConnectionTyping={wsConnectionTyping} wsConnectionAudio={wsConnectionAudio} chatId={props.chatId} chatName={props.chatName} setOpenChat={props.setOpenChat} />
+      <div className="h-full">
+        <ConnectionComponent wsConnectionChat={wsConnectionChat} wsConnectionTyping={wsConnectionTyping} wsConnectionAudio={wsConnectionAudio} chatId={props.chatId} chatName={props.chatName} setOpenChat={props.setOpenChat} />
+      </div>
     )
   }
   
@@ -378,7 +380,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
         </div>
         {
           !!aboutOpen && chatInfo.data && !chatInfo.isLoading && data &&
-          <div className="relative w-full aboutGradient overflow-scroll flex flex-col items-center">
+          <div className="w-full aboutGradient overflow-scroll flex flex-col items-center h-full">
             <p className="sm:w-[60%] w-[90%] text-3xl mt-10">Members:</p>
             <div className="sm:w-[60%] w-[90%] mt-4 drop-shadow-xl p-2 overflow-scroll h-fit rounded-xl z-10 outline outline-4 outline-green-300">
             {

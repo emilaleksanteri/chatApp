@@ -18,7 +18,7 @@ export const Chats = (props: {openChat: {
     const items = new Array(20).fill(1)
     if (isLoading) {
       return (
-        <div className="bg-zinc-100 h-full overflow-auto border-2">
+        <div className="bg-zinc-100 h-[70vh] overflow-auto border-2">
         <CreateChat />
         <div className="flex flex-col mt-2 p-1">
           {items?.map(() => (
@@ -36,7 +36,7 @@ export const Chats = (props: {openChat: {
     }
   
     return (
-      <div className="bg-zinc-100 h-full border-2">
+      <div className="bg-zinc-100 h-[96vh] border-2">
         <CreateChat />
         <div className="flex flex-col mt-2 overflow-auto p-1">
           {data?.map((chat) => (
