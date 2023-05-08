@@ -68,7 +68,7 @@ export const Chats = (props: {openChat: {
     const placeHolder = new Array(10).fill(0)
     if (isLoading) {
       return (
-        <div className="overflow-auto w-full h-20">
+        <div className="overflow-auto w-full h-36">
             {placeHolder?.map(() => (
               <button key={Math.floor(Math.random() * 10000000)} className="flex gap-4 bg-zinc-100 w-full items-cetner p-2 border border-2 hover:bg-zinc-200">
                 <div className="w-6 h-6 loaderGradient p-4 rounded-full"></div>
@@ -79,7 +79,7 @@ export const Chats = (props: {openChat: {
       )
     }
     return (
-        <div className="overflow-auto w-full h-20">
+        <div className="overflow-auto w-full h-36">
             {data?.map((user) => (
               <button key={user.id} className={props.participants.includes(user.id) ? "flex gap-4 bg-green-300 w-full items-cetner p-2" : "flex gap-4 bg-zinc-100 w-full items-cetner p-2 border border-2 hover:bg-zinc-200"} onClick={() => {
                 if (props.participants.includes(user.id)) {

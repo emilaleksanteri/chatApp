@@ -110,11 +110,11 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
   
     if (user) {
       return (
-        <div className="flex items-center w-full">
-          <Image width={80} height={80} src={user.profileImageUrl} alt="Profile Picture" className="w-[80px] h-[80px] rounded-full drop-shadow-lg border-4 border-emerald-300" />
-          <div className="ml-8 w-full">
-            <div className="w-full flex items-center gap-8" >
-              <textarea placeholder="message..." className="w-[90%] p-4 overflow-scroll bg-inherit border-2 border-zinc-300 rounded-2xl outline-none"
+        <div className="flex items-center w-full h-fit">
+          <Image width={80} height={80} src={user.profileImageUrl} alt="Profile Picture" className="sm:w-[80px] sm:h-[80px] sm:inline hidden rounded-full drop-shadow-lg border-4 border-emerald-300" />
+          <div className="sm:ml-8 ml-4 w-full">
+            <div className="w-full flex items-center sm:gap-8 gap-2" >
+              <textarea placeholder="message..." className="sm:w-[90%] w-[100%] p-4 overflow-scroll bg-inherit resize-none border-2 border-zinc-300 rounded-2xl outline-none"
                 value={input}
                 name="text"
                 onChange={(e) => {
@@ -138,14 +138,14 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
                   }
                 }}
               />
-              <button className="bg-emerald-300 text-xl p-4 rounded-2xl drop-shadow-lg pl-6 pr-6 font-bold"
+              <button className="bg-emerald-300 text-xl sm:p-4 p-2 rounded-2xl drop-shadow-lg px-4 sm:mr-0 mr-2 sm:pl-6 sm:pr-6 font-bold"
                 onClick={() => {
                   mutate({ body: input, chatId: props.chatId })
                 }}
               >
                 {isPosting && <Loader widthHeight="h-[24px] w-[24px]" />}
                 {!isPosting &&
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
                   </svg>
                 }
@@ -172,13 +172,13 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
             {message.author.id === user.user.id &&
               <div
                 className="p-4 bg-emerald-300 rounded-2xl flex flex-col items-center w-fit drop-shadow-xl flex gap-4">
-                <p className="text-lg" >{message.message.body}</p>
+                <p className="sm:text-lg text-md" >{message.message.body}</p>
               </div>
             }
             {message.author.id !== user.user.id &&
               <div
                 className="p-4 bg-zinc-400 rounded-2xl flex flex-col items-center w-fit drop-shadow-xl flex gap-4">
-                <p className="text-lg" >{message.message.body}</p>
+                <p className="sm:text-lg text-md" >{message.message.body}</p>
               </div>
             }
             {message.author?.id === user.user.id && <Image width={48} height={48} src={message.author.profileImageUrl} alt="profile" className="w-12 h-12 rounded-full text-xs drop-shadow-lg" />}
@@ -189,20 +189,8 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
           }
         </div>
       )
-    }
-  
-    return (
-      <div>
-        <div className="flex items-center gap-4">
-          <Image width={48} height={48} src={message.author.profileImageUrl} alt="profile" className="w-12 h-12 rounded-full text-xs drop-shadow-lg" />
-          <div
-            className="p-4 bg-zinc-300 rounded-2xl flex flex-col items-center w-fit drop-shadow-xl flex gap-4">
-            <p className="text-lg" >{message.message.body}</p>
-          </div>
-        </div>
-        <p className="text-[11px] text-zinc-400 mt-2">{dayjs(message.message.sentAt).fromNow()}</p>
-      </div>
-    )
+    } else return null
+
   }
   
   const Messages = (props: {listenToMessages: () => void, whoIsTyping: () => void, typing: string, chatId: string}) => {
@@ -225,8 +213,8 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
     if (isLoading) return <div className="relative w-full bgCgat overflow-scroll h-full flex items-center justify-center"><Loader widthHeight="w-[100px] h-[100px]" /></div>
   
     return (
-        <section className="relative w-full bgCgat overflow-scroll grid h-full">
-          <div className="flex flex-col gap-8 bottom-10 self-end -mb-2 mt-4">
+        <section className="relative w-full bgCgat overflow-scroll grid h-[88%]">
+          <div className="flex flex-col gap-8 self-end -mb-4 mt-4">
             {data?.map((message) => {
               if (user.isSignedIn && user.user.id === message.author?.id) {
                return (
@@ -365,31 +353,36 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
       }
     })
 
-    const loaderData = new Array(2).fill(0)
+    const loaderData = new Array(6).fill(0)
   
     return (
       <div className="w-full h-full flex flex-col">
-        <div className="bg-zinc-100 text-2xl font-bold pl-2 drop-shadow-lg z-10 outline outline-1 outline-zinc-300 flex gap-2 items-center">
+        <div className="bg-zinc-100 text-2xl font-bold drop-shadow-lg z-10 outline outline-1 outline-zinc-300 flex gap-2 items-center justify-between">
           <button className="p-2" onClick={() => props.setOpenChat({ chatId: "", open: false, chatName: "" })}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-10 h-10">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
             </svg>
           </button>
-          <button className="p-2 ml-10" onClick={() => setAboutOpen(true)}>{props.chatName}</button>
+          <p>{props.chatName}</p>
+          <button className="p-2" onClick={() => setAboutOpen(true)}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-10 h-10">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+            </svg>
+          </button>
         </div>
         {
           !!aboutOpen && chatInfo.data && !chatInfo.isLoading && data &&
-          <div className="relative w-full bg-zinc-100 overflow-scroll flex flex-col h-full items-center">
-            <p className="w-[60%] text-3xl mt-10">Members:</p>
-            <div className="w-[60%] mt-4 drop-shadow-xl p-2 overflow-scroll h-fit rounded-xl z-10 outline outline-2 outline-green-300">
+          <div className="relative w-full aboutGradient overflow-scroll flex flex-col items-center">
+            <p className="sm:w-[60%] w-[90%] text-3xl mt-10">Members:</p>
+            <div className="sm:w-[60%] w-[90%] mt-4 drop-shadow-xl p-2 overflow-scroll h-fit rounded-xl z-10 outline outline-4 outline-green-300">
             {
                 isLoading &&
-                <div className="">
+                <div>
                  {
-                   loaderData?.map((member) => (
+                   loaderData?.map(() => (
                        <div key={Math.floor(Math.random() * 1000000)} className="flex items-center gap-4 p-2">
-                         <div className="greenLoading p-10 rounded-full" />
-                         <p className="greenLoading p-6 w-[60%] rounded-lg"></p>
+                         <div className="greenLoading sm:p-10 p-6 rounded-full" />
+                         <p className="greenLoading sm:p-6 p-4 w-[80%] rounded-lg"></p>
                        </div>
                    ))
                  }
@@ -397,35 +390,35 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
               }
               {
                !isLoading &&
-               <div className="">
+               <div>
                 {
                   data?.map((member) => (
                     !!member.user &&
                       <div key={member.user.id} className="flex items-center gap-4 p-2">
-                        <Image width={80} height={80} src={member.user?.profileImageUrl} alt="profile" className="w-[80px] h-[80px] rounded-full text-xs drop-shadow-lg" />
-                        <p className="text-3xl">{member.user.username}</p>
+                        <Image width={80} height={80} src={member.user?.profileImageUrl} alt="profile" className="sm:w-[80px] sm:h-[80px] w-[60px] h-[60px] rounded-full text-xs drop-shadow-lg" />
+                        <p className="sm:text-3xl text-xl">{member.user.username}</p>
                       </div>
                   ))
                 }
                </div>
               }
             </div>
-            <p className="w-[60%] text-3xl mt-10">{"Created at: " + chatInfo.data.createdAt.toDateString()}</p>
+            <p className="sm:w-[60%] w-[90%] text-center sm:text-3xl text-2xl mt-10">{"Created at: " + chatInfo.data.createdAt.toDateString()}</p>
             <button onClick={() => {mutate({ chatId: props.chatId, numOfUsers: data?.length })}} 
-              className="mt-10 w-[60%] p-2 bg-rose-400 rounded-lg drop-shadow-lg text-2xl font-bold text-zinc-800">
+              className="mt-10 sm:w-[60%] w-[90%] p-2 bg-rose-400 rounded-lg drop-shadow-lg text-2xl font-bold text-zinc-800 mb-2">
                 LEAVE
             </button>
           </div>
         }
         {
           !aboutOpen &&
-          <div className="h-[82%]">
+          <div className="h-[100%]">
             <Messages listenToMessages={listenToMessages} whoIsTyping={whoIsTyping} typing={typing} chatId={props.chatId} />
-            <div className="flex flex-col w-full items-center">
-              <div className="bg-zinc-100 p-4 w-full">
+            <div className="flex flex-col w-full items-center justify-center">
+              <div className="bg-zinc-100 w-full">
                 <PostMessageWizard sendMessage={sendMessage} theyTyping={theyTyping} typing={typing} chatId={props.chatId} />
               </div>
-              <div className="absolute right-[0.5%] top-[12%] z-20 drop-shadow-lg">
+              <div className="absolute right-[0.5%] top-[13%] z-20 drop-shadow-lg">
                 <AudioEffects effect={effect} sounds={sounds} sendSoundToAll={sendSoundToAll} setEffect={setEffect} />
               </div>
             </div>
