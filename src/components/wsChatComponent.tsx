@@ -49,20 +49,23 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
   
   
     return (
-      <div className="bg-zinc-100 rounded-xl p-2 w-46 outline outline-1">
+      <div className={!showEffects ? "bg-zinc-100 rounded-full p-2 w-46 drop-shadow-md" : "bg-zinc-100 rounded-xl p-2 w-46 drop-shadow-md"}>
         <button className="flex gap-2 justify-between items-center p-2" onClick={() => setShowEffects(!showEffects)}>
-          <p className="font-bold uppercase ml-4">Sound Effects</p>
           {
             showEffects
             ?
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-4">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
-            </svg>
+            <div className="flex">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
+              <p className="font-bold uppercase ml-4">Sound Effects</p>
+            </div>
             :
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-4">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
             </svg>
-  
+
+
           }
           
   
@@ -119,9 +122,12 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
                 name="text"
                 onChange={(e) => {
                     setInput(e.target.value)
-                    if (props.typing.length === 0 && inputLength < input.length) {
+                    if (props.typing !== typeof "string" && inputLength < input.length) {
                         setInputLength(input.length)
                         props.theyTyping(user.username ? user.username: 'anonymous')
+                    }
+                    if (!e.target.value) {
+                      props.theyTyping("stop typing")
                     }
                   }
                 }
@@ -238,7 +244,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
                 </div>
               )
             })}
-            <div>
+            <div className="fixed bottom-24">
               <p className="text-lg text-zinc-500 ml-2">{props.typing}</p>
             </div>
             <div ref={bottomRef} />
@@ -307,10 +313,6 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
       }
     }
   
-    const intreval = setInterval(() => {
-      setTyping("")
-    }, 4000)
-  
     const theyTyping = (user: string): void => {
       setTimeout(() => {
         props.wsConnectionTyping.send(user)
@@ -319,8 +321,12 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
   
     const whoIsTyping = (): void => {
       props.wsConnectionTyping.onmessage = (msg) => {
-        const user = msg.data + ' is typing...'
-        setTyping(user)
+        if (msg.data !== "stop typing") {
+          const user = msg.data + ' is typing...'
+          setTyping(user)
+        } else {
+          setTyping("")
+        }
       }
     }
   
@@ -426,7 +432,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
               <div className="bg-zinc-100 w-full">
                 <PostMessageWizard sendMessage={sendMessage} theyTyping={theyTyping} typing={typing} chatId={props.chatId} />
               </div>
-              <div className="absolute right-[0.5%] top-[13%] z-20 drop-shadow-lg">
+              <div className="absolute right-[0.5%] top-[15%] z-20 drop-shadow-lg">
                 <AudioEffects effect={effect} sounds={sounds} sendSoundToAll={sendSoundToAll} setEffect={setEffect} />
               </div>
             </div>
