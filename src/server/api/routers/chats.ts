@@ -115,21 +115,23 @@ export const chatsRouter = createTRPCRouter({
             chatId: input.chatId,
           },
         });
+        return 'left';
       } else {
-        await ctx.prisma.participants.deleteMany({
-          where: {
-            userId: userId,
-            chatId: input.chatId,
-          },
-        });
-
-        await ctx.prisma.chat.deleteMany({
+        await ctx.prisma.chat.update({
           where: {
             id: input.chatId,
           },
+          data: {
+            Participants: {
+              deleteMany: {},
+            },
+            messages: {
+              deleteMany: {},
+            },
+          },
         });
-      }
 
-      return 'success';
+        return 'deleted';
+      }
     }),
 });

@@ -210,7 +210,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
     }, [data])
   
   
-    if (isLoading) return <div className="relative w-full bgCgat overflow-scroll h-full flex items-center justify-center"><Loader widthHeight="w-[100px] h-[100px]" /></div>
+    if (isLoading) return <div className="relative w-full bgCgat overflow-scroll h-[88%] flex items-center justify-center"><Loader widthHeight="w-[100px] h-[100px]" /></div>
   
     return (
         <section className="relative w-full bgCgat overflow-scroll grid h-[88%]">
@@ -339,8 +339,14 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
     const {data, isLoading} = api.chats.getChatMembers.useQuery(props.chatId)
     const chatInfo = api.chats.getChatData.useQuery(props.chatId)
     const { mutate, isLoading: isPosting } = api.chats.leaveChat.useMutation({
-      onSuccess: () => {
+      onSuccess: (data) => {
         ctx.chats.getAll.invalidate()
+        if (data === "left") {
+          toast.success("Chat left")
+        } else {
+          toast.success("Chat deleted")
+        }
+        
         props.setOpenChat({ chatId: "", open: false, chatName: "" })
       },
       onError: (e) => {

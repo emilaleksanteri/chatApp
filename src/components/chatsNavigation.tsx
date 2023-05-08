@@ -110,6 +110,7 @@ export const Chats = (props: {openChat: {
     const { mutate } = api.chats.createChat.useMutation({
       onSuccess: () => {
         ctx.chats.invalidate()
+        toast.success(`${chatName} created 🎉`)
         setChatName("")
         setParticipants([user?.user?.id])
       },
