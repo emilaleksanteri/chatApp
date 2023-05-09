@@ -86,3 +86,7 @@
 		background-position: 0% 50%;
 	}
 }
+
+.scroll::-webkit-scrollbar {
+	display: none;
+  }

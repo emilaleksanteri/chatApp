@@ -98,7 +98,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
       onSuccess: () => {
         ctx.message.getAll.invalidate()
         ctx.chats.getAll.invalidate()
-        props.sendMessage(input)
+        props.sendMessage(props.chatId)
         setInput("")
       },
       onError: (e) => {
@@ -117,7 +117,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
           <Image width={80} height={80} src={user.profileImageUrl} alt="Profile Picture" className="sm:w-[80px] sm:h-[80px] sm:inline hidden rounded-full drop-shadow-lg border-4 border-emerald-300" />
           <div className="sm:ml-8 ml-4 w-full">
             <div className="w-full flex items-center sm:gap-8 gap-2" >
-              <textarea placeholder="message..." className="sm:w-[90%] w-[100%] p-4 overflow-scroll bg-inherit resize-none border-2 border-zinc-300 rounded-2xl outline-none"
+              <textarea placeholder="message..." className="scroll sm:w-[90%] w-[100%] p-4 overflow-scroll bg-inherit resize-none border-2 border-zinc-300 rounded-2xl outline-none"
                 value={input}
                 name="text"
                 onChange={(e) => {
@@ -244,7 +244,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
                 </div>
               )
             })}
-            <div className="fixed bottom-24">
+            <div className="fixed bottom-24 sm:bottom-32">
               <p className="text-lg text-zinc-500 ml-2">{props.typing}</p>
             </div>
             <div ref={bottomRef} />
@@ -260,9 +260,9 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
     chatName: string;
   }>>}) => {
     const URL = getBaseUrl()
-    const wsConnectionChat = new WebSocket(`${URL}/chat`)
-    const wsConnectionTyping = new WebSocket(`${URL}/typing`)
-    const wsConnectionAudio = new WebSocket(`${URL}/sounds`)
+    const wsConnectionChat = new WebSocket(`${URL}/chat?id=${props.chatId}`)
+    const wsConnectionTyping = new WebSocket(`${URL}/typing?id=${props.chatId}`)
+    const wsConnectionAudio = new WebSocket(`${URL}/sounds?id=${props.chatId}`)
   
     return (
       <div className="h-full">
@@ -315,7 +315,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
   
     const theyTyping = (user: string): void => {
       setTimeout(() => {
-        props.wsConnectionTyping.send(user)
+        props.wsConnectionTyping.send(JSON.stringify({ chatId: props.chatId, username: user }))
       }, 300)
     }
   
@@ -331,7 +331,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
     }
   
     const sendSoundToAll = (name: string): void => {
-      props.wsConnectionAudio.send(name)
+      props.wsConnectionAudio.send(JSON.stringify({ chatId: props.chatId, fileIdx: name }))
     }
   
     props.wsConnectionAudio.addEventListener("message", (event) => {
