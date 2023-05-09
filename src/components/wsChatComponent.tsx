@@ -29,7 +29,7 @@ dayjs.extend(relativeTime)
 const AudioEffects = (props: {effect: number | undefined, sounds: {
     hook: ReturnedValue;
     name: string;
-  }[], sendSoundToAll: (name: string) => void, setEffect: any}) => {
+  }[], sendSoundToAll: (name: string, chatId: string) => void, setEffect: any, chatId: string}) => {
     const [showEffects, setShowEffects] = useState(false)
   
     useEffect(() => {
@@ -76,7 +76,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
               {props.sounds.map((sound) => (
                 <button key={sound.name} className="bg-zinc-200 text-zinc-800 font-bold p-2 uppercase hover:bg-emerald-300 hover:drop-shadow-xl rounded-xl hover:outline hover:outline-1" onClick={() => {
                   if (!props.effect) {
-                    props.sendSoundToAll(sound.name)
+                    props.sendSoundToAll(sound.name, props.chatId)
                   }
                 }}>{sound.name}</button>
               ))}
@@ -87,7 +87,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
     )
   }
   
-  const PostMessageWizard = (props: {sendMessage: (input: string) => void, theyTyping: (user: string) => void, typing: string, chatId: string}) => {
+  const PostMessageWizard = (props: {sendMessage: (input: string) => void, theyTyping: (user: string, chatId: string) => void, typing: string, chatId: string}) => {
     const { user } = useUser()
     const [input, setInput] = useState("")
     const [inputLength, setInputLength] = useState(0)
@@ -124,10 +124,10 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
                     setInput(e.target.value)
                     if (props.typing !== typeof "string" && inputLength < input.length) {
                         setInputLength(input.length)
-                        props.theyTyping(user.username ? user.username: 'anonymous')
+                        props.theyTyping(user.username ? user.username: 'anonymous', props.chatId)
                     }
                     if (!e.target.value) {
-                      props.theyTyping("stop typing")
+                      props.theyTyping("stop typing", props.chatId)
                     }
                   }
                 }
@@ -313,7 +313,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
       }
     }
   
-    const theyTyping = (user: string): void => {
+    const theyTyping = (user: string, chatId: string): void => {
       setTimeout(() => {
         props.wsConnectionTyping.send(JSON.stringify({ chatId: props.chatId, username: user }))
       }, 300)
@@ -330,8 +330,8 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
       }
     }
   
-    const sendSoundToAll = (name: string): void => {
-      props.wsConnectionAudio.send(JSON.stringify({ chatId: props.chatId, fileIdx: name }))
+    const sendSoundToAll = (name: string, chatId: string): void => {
+      props.wsConnectionAudio.send(JSON.stringify({ chatId: chatId, fileIdx: name }))
     }
   
     props.wsConnectionAudio.addEventListener("message", (event) => {
@@ -433,7 +433,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
                 <PostMessageWizard sendMessage={sendMessage} theyTyping={theyTyping} typing={typing} chatId={props.chatId} />
               </div>
               <div className="absolute right-[0.5%] top-[15%] z-20 drop-shadow-lg">
-                <AudioEffects effect={effect} sounds={sounds} sendSoundToAll={sendSoundToAll} setEffect={setEffect} />
+                <AudioEffects effect={effect} sounds={sounds} sendSoundToAll={sendSoundToAll} setEffect={setEffect} chatId={props.chatId} />
               </div>
             </div>
           </div>
