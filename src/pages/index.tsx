@@ -41,13 +41,13 @@ const Home: NextPage = () => {
               SIGN OUT
             </button>
           </SignOutButton>
-          <div className="flex sm:flex-row flex-col h-full w-full">
-            <div className={!!openChat.open ? "lg:w-[40%] sm:w-[70%] w-100% h-full sm:inline hidden" : "lg:w-[40%] sm:w-[70%] w-100% h-full"}>
+          <div className="flex md:flex-row flex-col h-full w-full">
+            <div className={!!openChat.open ? "lg:w-[40%] md:w-[70%] w-100% h-full md:inline hidden" : "lg:w-[40%] md:w-[70%] w-100% h-full"}>
               <ChatsNavigation openChat={openChat} setOpenChat={setOpenChat} />
             </div>
             { openChat.open
               ? <div className="lg:w-[100%] h-full w-full"><ChatComponent chatId={openChat.chatId} chatName={openChat.chatName} setOpenChat={setOpenChat} /></div>
-              : <div className="bgGridThing w-full h-full sm:flex hidden"></div>
+              : <div className="bgGridThing w-full h-full md:flex hidden"></div>
             }
           </div>
         </div> 

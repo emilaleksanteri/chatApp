@@ -173,26 +173,24 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
     if (user.isSignedIn) {
       return (
         <div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-start gap-4 sm:max-w-[60vw] max-w-[80vw]">
             {message.author?.id !== user.user.id && <Image width={48} height={48} src={message.author.profileImageUrl} alt="User" className="w-12 h-12 rounded-full text-xs drop-shadow-lg" />}
             {message.author.id === user.user.id &&
               <div
-                className="p-4 bg-emerald-300 rounded-2xl flex flex-col items-center w-fit drop-shadow-xl flex gap-4">
-                <p className="sm:text-lg text-md" >{message.message.body}</p>
+                className="p-3 bg-emerald-300 rounded-2xl flex flex-col items-center w-fit drop-shadow-xl gap-0">
+                <p className="sm:text-lg text-md sm:max-w-[40vw] max-w-[55vw] text-ellipsis overflow-hidden text-left" >{message.message.body}</p>
+                <p className="text-[11px] mt-2 ml-1 text-right w-full">{dayjs(message.message.sentAt).fromNow()}</p>
               </div>
             }
             {message.author.id !== user.user.id &&
               <div
-                className="p-4 bg-zinc-400 rounded-2xl flex flex-col items-center w-fit drop-shadow-xl flex gap-4">
-                <p className="sm:text-lg text-md" >{message.message.body}</p>
+                className="p-3 bg-zinc-400 rounded-2xl flex flex-col items-center w-fit drop-shadow-xl gap-0">
+                <p className="sm:text-lg text-left text-md sm:max-w-[40vw] max-w-[55vw] text-ellipsis overflow-hidden" >{message.message.body}</p>
+                <p className="text-[11px] mt-2 ml-1 text-left w-full">{dayjs(message.message.sentAt).fromNow()}</p>
               </div>
             }
             {message.author?.id === user.user.id && <Image width={48} height={48} src={message.author.profileImageUrl} alt="profile" className="w-12 h-12 rounded-full text-xs drop-shadow-lg" />}
           </div>
-          {message.author?.id !== user.user.id
-            ? <p className="text-[11px] text-zinc-400 mt-2 ml-1 text-left">{dayjs(message.message.sentAt).fromNow()}</p>
-            : <p className="text-[11px] text-zinc-400 mt-2 ml-1 text-right">{dayjs(message.message.sentAt).fromNow()}</p>
-          }
         </div>
       )
     } else return null
@@ -219,7 +217,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
     if (isLoading) return <div className="relative w-full bgCgat overflow-y-scroll h-[78vh] flex items-center justify-center"><Loader widthHeight="w-[100px] h-[100px]" /></div>
   
     return (
-        <section className="relative w-full bgCgat overflow-y-scroll grid h-[78vh]">
+        <section className="relative w-full bgCgat overflow-y-scroll grid h-[78vh] md:w-[71.5vw] w-screen scroll">
           <div className="flex flex-col gap-8 self-end -mb-4 mt-4">
             {data?.map((message) => {
               if (user.isSignedIn && user.user.id === message.author?.id) {
