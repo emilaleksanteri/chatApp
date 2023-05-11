@@ -385,8 +385,8 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
         {
           !!aboutOpen && chatInfo.data && !chatInfo.isLoading && data &&
           <div className="w-full aboutGradient overflow-scroll flex flex-col items-center h-full">
-            <p className="sm:w-[60%] w-[90%] text-3xl mt-10">Members:</p>
-            <div className="sm:w-[60%] w-[90%] mt-4 drop-shadow-xl p-2 overflow-scroll h-fit rounded-xl z-10 outline outline-4 outline-green-300">
+            <p className="sm:w-[60%] w-[90%] text-4xl mt-10 drop-shadow-lg font-bold text-zinc-100">Members:</p>
+            <div className="sm:w-[60%] w-[90%] mt-4 drop-shadow-xl p-2 overflow-scroll h-fit rounded-xl z-10 outline outline-4 outline-green-300 scroll">
             {
                 isLoading &&
                 <div>
@@ -408,16 +408,16 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
                     !!member.user &&
                       <div key={member.user.id} className="flex items-center gap-4 p-2">
                         <Image width={80} height={80} src={member.user?.profileImageUrl} alt="profile" className="sm:w-[80px] sm:h-[80px] w-[60px] h-[60px] rounded-full text-xs drop-shadow-lg" />
-                        <p className="sm:text-3xl text-xl">{member.user.username}</p>
+                        <p className="sm:text-3xl text-xl font-bold text-zinc-100 drop-shadow-lg">{member.user.username}</p>
                       </div>
                   ))
                 }
                </div>
               }
             </div>
-            <p className="sm:w-[60%] w-[90%] text-center sm:text-3xl text-2xl mt-10">{"Created at: " + chatInfo.data.createdAt.toDateString()}</p>
+            <p className="sm:w-[60%] w-[90%] text-center sm:text-3xl text-2xl mt-10 font-bold text-zinc-100 drop-shadow-lg">{"Created at: " + chatInfo.data.createdAt.toDateString()}</p>
             <button onClick={() => {mutate({ chatId: props.chatId, numOfUsers: data?.length })}} 
-              className="mt-10 sm:w-[60%] w-[90%] p-2 bg-rose-400 rounded-lg drop-shadow-lg text-2xl font-bold text-zinc-800 mb-2">
+              className="mt-10 sm:w-[60%] w-[90%] p-2 bg-rose-400 rounded-lg drop-shadow-lg text-2xl font-bold text-zinc-100 mb-2">
                 LEAVE
             </button>
           </div>
