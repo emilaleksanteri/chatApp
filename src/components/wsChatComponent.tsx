@@ -74,7 +74,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
           showEffects
           ? <div className="grid grid-cols-2 items-stretch gap-2">
               {props.sounds.map((sound) => (
-                <button key={sound.name} className="bg-zinc-200 text-zinc-800 font-bold p-2 uppercase hover:bg-emerald-300 hover:drop-shadow-xl rounded-xl hover:outline hover:outline-1" onClick={() => {
+                <button key={sound.name} className="bg-zinc-200 text-zinc-800 font-bold border-2 border-zinc-200 p-2 uppercase hover:bg-emerald-300 hover:drop-shadow-xl rounded-xl hover:border-zinc-900" onClick={() => {
                   if (!props.effect) {
                     props.sendSoundToAll(sound.name, props.chatId)
                   }
@@ -242,7 +242,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
     if (isLoading) return <div className="relative w-full bgCgat overflow-y-scroll h-[78vh] flex items-center justify-center"><Loader widthHeight="w-[100px] h-[100px]" /></div>
   
     return (
-        <section className="relative w-full bgCgat overflow-y-scroll grid h-[78vh] md:w-[71.5vw] w-screen scroll">
+        <section className="relative w-full bgCgat overflow-y-scroll grid h-[76.5vh] md:w-[71.5vw] w-screen scroll">
           <div className="flex flex-col gap-8 self-end -mb-4 mt-4">
             {data?.map((message) => {
               if (user.isSignedIn && user.user.id === message.author?.id) {
@@ -397,7 +397,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
             </svg>
           </button>
-          <div className="flex flex-col p-2">
+          <div className="flex flex-col p-2 text-center">
             <p>{props.chatName}</p>
             <p className={ typing.length ? "text-xs font-light w-full text-center p-1" : "text-xs font-light w-full text-center p-1 text-zinc-100"}>{typing.length ? typing : "."}</p>
           </div>
@@ -455,7 +455,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
               <div className="bg-zinc-100 w-full">
                 <PostMessageWizard sendMessage={sendMessage} theyTyping={theyTyping} typing={typing} chatId={props.chatId} />
               </div>
-              <div className="absolute right-[0.5%] top-[15%] z-20 drop-shadow-lg">
+              <div className="absolute right-[0.5%] top-[20%] z-20 drop-shadow-lg">
                 <AudioEffects effect={effect} sounds={sounds} sendSoundToAll={sendSoundToAll} setEffect={setEffect} chatId={props.chatId} />
               </div>
             </div>

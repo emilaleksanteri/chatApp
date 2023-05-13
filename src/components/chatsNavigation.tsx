@@ -1,9 +1,10 @@
 import { api } from "~/utils/api";
 import { useUser } from "@clerk/nextjs";
 import Image from 'next/image'
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { HowTo } from "./howTo"
+import { TypeOf } from "zod";
 
 
 export const Chats = (props: {openChat: {
@@ -15,15 +16,25 @@ export const Chats = (props: {openChat: {
     chatName: string;
   }>>}) => {
     const {data, isLoading} = api.chats.getAll.useQuery()
+    const [chats, setChats] = useState<typeof data>()
+    const [filter, setFilter] = useState<typeof data>()
     const randomColours = ["stroke-red-500", "stroke-orange-500", "stroke-amber-500", "stroke-yellow-400", "stroke-lime-400", "stroke-green-400", "stroke-emerald-400", "stroke-teal-400", "stroke-cyan-400", "stroke-sky-400", "stroke-blue-500", "stroke-indigo-500", "stroke-violet-500", "stroke-purple-500", "stroke-fuchsia-500", "stroke-pink-500", "stroke-rose-400"]
     const items = new Array(20).fill(1)
+
+    useEffect(()=> {
+      if (!isLoading) {
+        setChats(data)
+        setFilter(data)
+      }
+    },[isLoading])
+
     if (isLoading) {
       return (
         <div className="bg-zinc-100 border-2 overflow-y-scroll max-h-[96vh]">
         <CreateChat />
         <div className="flex flex-col mt-2 p-1">
           {items?.map(() => (
-            <div key={Math.floor(Math.random() * 1000000)} className="flex w-full items-center justify-center outline outline-1 outline-zinc-300 hover:bg-zinc-200 rounded-md">
+            <div key={Math.floor(Math.random() * 1000000)} className="flex w-full items-center justify-center border-2 border-zinc-300 hover:bg-zinc-200 rounded-md">
               <div className="loaderGradient rounded-full p-7"></div>
               <button className="flex flex-col text-left py-2 pl-8 w-full">
                 <p className="text-xl font-bold tracking-wide loaderGradient p-4 w-[60%] rounded-xl"></p>
@@ -35,13 +46,18 @@ export const Chats = (props: {openChat: {
       </div>
       )
     }
-  
+
     return (
       <div className="bg-zinc-100 h-[96vh] border-2">
         <CreateChat />
+        <div className="w-full flex items-center justify-center">
+          <input type="text" placeholder="search chats.." className="p-2 bg-zinc-100 border-2 border-zinc-300 w-[81%] outline-none rounded-lg"
+          onChange={(e) => {setFilter(chats?.filter((chat) => chat.Chat.chatName.includes(e.target.value.toLowerCase())))}} />
+        </div>
+        
         <ul className="flex flex-col mt-2 overflow-auto p-1">
-          {data?.map((chat) => (
-            <li key={chat.chatId} className="flex w-full items-center justify-center outline outline-1 outline-zinc-300 hover:bg-zinc-200 rounded-md">
+          {filter?.map((chat) => (
+            <li key={chat.chatId} className="flex w-full items-center justify-center border-2 border-zinc-300 hover:bg-zinc-200 rounded-md">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className={"w-10 h-10 m-4 stroke-1 fill-none " + randomColours[Math.floor(Math.random() * randomColours.length)]}>
                 <path d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
               </svg>
@@ -68,6 +84,16 @@ export const Chats = (props: {openChat: {
   const UsersList = (props: { participants: string[], setParticipants: Dispatch<SetStateAction<string[]>>}) => {
     const {data, isLoading} = api.users.getAll.useQuery()
     const placeHolder = new Array(10).fill(0)
+    const [users, setUsers] = useState<typeof data>()
+    const [filter, setFilter] = useState<typeof data>()
+
+    useEffect(() => {
+      setUsers(data)
+      setFilter(data)
+    }, [isLoading])
+
+
+
     if (isLoading) {
       return (
         <div className="overflow-auto w-full h-36 scroll">
@@ -81,8 +107,11 @@ export const Chats = (props: {openChat: {
       )
     }
     return (
+      <div className="flex flex-col items-center justify-center">
+        <input type="text" placeholder="search users.." className="p-2 bg-zinc-100 border-2 border-zinc-300 w-[95%] outline-none rounded-lg mb-2"
+          onChange={(e) => {setFilter(users?.filter((user) => user.username?.includes(e.target.value.toLowerCase())))}} />
         <div className="overflow-auto w-full h-36 scroll">
-            {data?.map((user) => (
+            {filter?.map((user) => (
               <button key={user.id} className={props.participants.includes(user.id) ? "flex gap-4 bg-green-300 w-full items-cetner p-2" : "flex gap-4 bg-zinc-100 w-full items-cetner p-2 border border-2 hover:bg-zinc-200"} onClick={() => {
                 if (props.participants.includes(user.id)) {
                   props.setParticipants(props.participants.filter((usr) => usr !== user.id))
@@ -95,6 +124,7 @@ export const Chats = (props: {openChat: {
               </button>
             ))}
         </div>
+      </div>
     )
   }
   

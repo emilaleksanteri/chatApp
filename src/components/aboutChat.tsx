@@ -43,7 +43,7 @@ export const AboutChat = (props: { setOpenChat: Dispatch<SetStateAction<{
                   </svg>
                 </button>
             </div>
-            <section className="relative w-full bgCgat overflow-y-scroll grid h-[78vh] md:w-[71.5vw] w-screen scroll z-0">
+            <section className="relative w-full bgCgat overflow-y-scroll grid h-[76.5vh] md:w-[71.5vw] w-screen scroll z-0">
               <div className="flex flex-col gap-8 self-end -mb-4 mt-4 w-max">
                 <div className="flex flex-col gap-8 self-end -mb-4 mt-4 mt-10">
                     {messages.map((message) => (
