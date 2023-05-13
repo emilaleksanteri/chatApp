@@ -17,7 +17,7 @@ export const AboutChat = (props: { setOpenChat: Dispatch<SetStateAction<{
         { id: 2, message: "Within the chat you can send message through the bottom of the screen input field, the maximum length for these is 255 for now 🥲" },
         { id: 3, message: "You can also ask an AI chatbot anything in the chat by using @ai at the start of your message" },
         { id: 4, message: "In the actual chats there is also an arrow button on the right side of the screen, through this you will be able to play sound effects to everyone in the chat 😵‍💫" },
-        { id: 5, message: "If you want to leave a chat, simply press the i icon on top of the right hand side of the screen and click the leave button, there you can also see all the memebers of a chat 🥳" }
+        { id: 5, message: "If you want to leave a chat, simply press the i icon on top of the right hand side of the screen and click the leave button, there you can also see all the members of a chat 🥳" }
     ]
 
     useEffect(() => {
