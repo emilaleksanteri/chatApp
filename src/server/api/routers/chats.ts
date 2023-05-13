@@ -108,7 +108,7 @@ export const chatsRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const userId = ctx.userId;
 
-      if (input.numOfUsers > 2) {
+      if (input.numOfUsers > 3) {
         await ctx.prisma.participants.deleteMany({
           where: {
             userId: userId,

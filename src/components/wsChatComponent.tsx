@@ -20,7 +20,7 @@ const getBaseUrl = () => {
     process.env.NODE_ENV !== 'development'
   )
     return `${process.env.NEXT_PUBLIC_WEBSOCKET_URL}`; // SSR should use vercel url
-  return `ws://localhost:8080`; // dev SSR should use localhost
+  return `${process.env.NEXT_PUBLIC_WEBSOCKET_URL}`; // dev SSR should use localhost
 };
 
 dayjs.extend(relativeTime)
@@ -55,14 +55,14 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
             showEffects
             ?
             <div className="flex">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
               </svg>
               <p className="font-bold uppercase ml-4">Sound Effects</p>
             </div>
             :
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
             </svg>
 
 
@@ -91,6 +91,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
     const { user } = useUser()
     const [input, setInput] = useState("")
     const [inputLength, setInputLength] = useState(0)
+    const [aiCall, setAiCall] = useState("")
   
     const ctx = api.useContext()
   
@@ -100,6 +101,23 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
         ctx.chats.getAll.invalidate()
         props.sendMessage(props.chatId)
         setInput("")
+      },
+      onError: (e) => {
+        const errorMsg = e.data?.zodError?.fieldErrors.body
+        if (errorMsg && errorMsg[0]) {
+          toast.error(errorMsg[0])
+        } else {
+          toast.error("Someting went wrong.")
+        }
+      }
+    })
+
+    const { mutate: aiPost, isLoading: processing } = api.message.aiMessage.useMutation({
+      onSuccess: () => {
+        ctx.message.getAll.invalidate()
+        ctx.chats.getAll.invalidate()
+        props.sendMessage(props.chatId)
+        setAiCall("")
       },
       onError: (e) => {
         const errorMsg = e.data?.zodError?.fieldErrors.body
@@ -122,6 +140,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
                 name="text"
                 onChange={(e) => {
                     setInput(e.target.value)
+                    setAiCall(e.target.value)
                     if (props.typing !== typeof "string" && inputLength < input.length) {
                         setInputLength(input.length)
                         props.theyTyping(user.username ? user.username: 'anonymous', props.chatId)
@@ -139,7 +158,13 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
                   if (e.key === "Enter") {
                     e.preventDefault();
                     if (input !== "") {
-                      mutate({ body: input, chatId: props.chatId });
+                      if (input.includes("@ai")) {
+                        mutate({ body: input, chatId: props.chatId });
+                        aiPost({ body: aiCall, chatId: props.chatId });
+                      } else {
+                        mutate({ body: input, chatId: props.chatId });
+                        setAiCall("")
+                      }
                     }
                   }
                 }}
@@ -371,14 +396,14 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
       <div className="w-full h-full flex flex-col">
         <div className="bg-zinc-100 text-2xl font-bold drop-shadow-lg z-10 outline outline-1 outline-zinc-300 flex gap-2 items-center justify-between">
           <button className="p-2" onClick={() => props.setOpenChat({ chatId: "", open: false, chatName: "" })}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-10 h-10">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-10 h-10">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
             </svg>
           </button>
           <p>{props.chatName}</p>
           <button className="p-2" onClick={() => setAboutOpen(true)}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-10 h-10">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-10 h-10">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
             </svg>
           </button>
         </div>

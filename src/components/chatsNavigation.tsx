@@ -102,7 +102,7 @@ export const Chats = (props: {openChat: {
   
     const [open, setOpen] = useState(false)
   
-    const [participants, setParticipants] = useState<Array<string>>([user?.user?.id])
+    const [participants, setParticipants] = useState<Array<string>>([user?.user?.id, "AI"])
     const [chatName, setChatName] = useState("")
   
     const ctx = api.useContext()
@@ -125,8 +125,8 @@ export const Chats = (props: {openChat: {
           !open &&
           <div className="flex justify-center">
             <button className="font-bold text-2xl w-[80%] text-center py-2 mt-3 rounded-lg outline outline-1 hover:bg-green-300 flex justify-center items-center" onClick={() => setOpen(true)}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
             </button>
           </div>
@@ -140,8 +140,8 @@ export const Chats = (props: {openChat: {
               <input value={chatName} type="text" onChange={(e) => setChatName(e.target.value)} className="w-[90%] p-1 bg-zinc-100 outline outline-1 outline-green-300 px-2 rounded-md" placeholder="Chat name..." />
               <div className="flex w-[90%] gap-2">
                 <button className="w-full flex items-center justify-center bg-rose-400 rounded-lg drop-shadow-md" onClick={() => setOpen(false)}>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </button>
                 <button type="submit" className="p-2 bg-green-300 w-full rounded-lg drop-shadow-md font-bold text-zinc-700 flex items-center justify-center" onClick={() => {
@@ -149,8 +149,8 @@ export const Chats = (props: {openChat: {
                     mutate({chatName: chatName, participants: participants})
                   }
                 }}>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
   
                 </button>

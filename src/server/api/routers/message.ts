@@ -1,11 +1,22 @@
 import { User, clerkClient } from '@clerk/nextjs/dist/api';
 import { z } from 'zod';
+import AIPic from '../../../../public/origin.jpg';
 
 import {
   createTRPCRouter,
   privateProcedure,
   publicProcedure,
 } from '~/server/api/trpc';
+
+import { Configuration, OpenAIApi } from 'openai';
+
+// config for ai anwsers
+const configuration = new Configuration({
+  organization: 'org-VH90biEnCK2gyFHj3909q8HS',
+  apiKey: process.env.NEXT_PUBLIC_chat_api,
+});
+
+const opneai = new OpenAIApi(configuration);
 
 // clerck returns a lot of fields, need to be narrowed down
 const filterUserForClient = (users: User) => {
@@ -47,7 +58,13 @@ export const messagesRouter = createTRPCRouter({
         userId: messages.map((message) => message.userId),
         limit: 100,
       })
-    ).map(filterUserForClient);
+    )
+      .map(filterUserForClient)
+      .concat({
+        id: 'AI',
+        username: 'AI',
+        profileImageUrl: '/origin.jpg',
+      });
 
     return messages.map((message) => ({
       message,
@@ -80,5 +97,45 @@ export const messagesRouter = createTRPCRouter({
       });
 
       return post;
+    }),
+
+  aiMessage: privateProcedure
+    .input(
+      z.object({
+        body: z.string(),
+        chatId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const prompt = input.body.slice(3);
+
+      if (!prompt) {
+        console.log('no prompt');
+        return;
+      }
+
+      const response = await opneai.createCompletion({
+        model: 'text-davinci-003',
+        prompt: prompt + ' in less than 255 characters',
+        max_tokens: 300,
+      });
+
+      const aiResponse: string | undefined = response.data.choices[0]?.text;
+      console.log(aiResponse);
+
+      if (!aiResponse) {
+        console.log('no ai response');
+        return;
+      }
+
+      const newPost = await ctx.prisma.message.create({
+        data: {
+          userId: 'AI',
+          body: aiResponse,
+          chatId: input.chatId,
+        },
+      });
+
+      return newPost;
     }),
 });
