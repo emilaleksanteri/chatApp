@@ -20,7 +20,7 @@ const getBaseUrl = () => {
     process.env.NODE_ENV !== 'development'
   )
     return `${process.env.NEXT_PUBLIC_WEBSOCKET_URL}`; // SSR should use vercel url
-  return `${process.env.NEXT_PUBLIC_WEBSOCKET_URL}`; // dev SSR should use localhost
+  return `${process.env.NEXT_PUBLIC_DEV_WS_URL}`; // dev SSR should use localhost
 };
 
 dayjs.extend(relativeTime)
