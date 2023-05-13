@@ -4,6 +4,7 @@ import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import { useState } from "react";
 import { Connect as ChatComponent } from "../components/wsChatComponent"
 import { Chats as ChatsNavigation } from "../components/chatsNavigation"
+import { AboutChat } from "../components/aboutChat"
 
 
 const Home: NextPage = () => {
@@ -45,9 +46,15 @@ const Home: NextPage = () => {
             <div className={!!openChat.open ? "lg:w-[40%] md:w-[70%] w-100% h-full md:inline hidden" : "lg:w-[40%] md:w-[70%] w-100% h-full"}>
               <ChatsNavigation openChat={openChat} setOpenChat={setOpenChat} />
             </div>
-            { openChat.open
-              ? <div className="lg:w-[100%] h-full w-full"><ChatComponent chatId={openChat.chatId} chatName={openChat.chatName} setOpenChat={setOpenChat} /></div>
-              : <div className="bgGridThing w-full h-full md:flex hidden"></div>
+            { openChat.open && openChat.chatId !== "about" &&
+              <div className="lg:w-[100%] h-full w-full"><ChatComponent chatId={openChat.chatId} chatName={openChat.chatName} setOpenChat={setOpenChat} /></div>
+            }
+            {
+              openChat.open && openChat.chatId === "about" &&
+              <div className="lg:w-[100%] h-full w-full"><AboutChat setOpenChat={setOpenChat} /></div>
+            }
+            { !openChat.open &&
+              <div className="bgGridThing w-full h-full md:flex hidden"></div>
             }
           </div>
         </div> 

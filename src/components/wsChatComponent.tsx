@@ -222,7 +222,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
 
   }
   
-  const Messages = (props: {listenToMessages: () => void, whoIsTyping: () => void, typing: string, chatId: string}) => {
+  const Messages = (props: {listenToMessages: () => void, whoIsTyping: () => void, chatId: string}) => {
     const user = useUser()
     const {data, isLoading} = api.message.getAll.useQuery(props.chatId)
   
@@ -267,9 +267,6 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
                 </div>
               )
             })}
-            <div className="fixed bottom-24 sm:bottom-32">
-              <p className="text-lg text-zinc-500 ml-2">{props.typing}</p>
-            </div>
             <div ref={bottomRef} />
           </div>
         </section>
@@ -400,7 +397,10 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
             </svg>
           </button>
-          <p>{props.chatName}</p>
+          <div className="flex flex-col p-2">
+            <p>{props.chatName}</p>
+            <p className={ typing.length ? "text-xs font-light w-full text-center p-1" : "text-xs font-light w-full text-center p-1 text-zinc-100"}>{typing.length ? typing : "."}</p>
+          </div>
           <button className="p-2" onClick={() => setAboutOpen(true)}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-10 h-10">
               <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
@@ -450,7 +450,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
         {
           !aboutOpen &&
           <div className="h-[100%]">
-            <Messages listenToMessages={listenToMessages} whoIsTyping={whoIsTyping} typing={typing} chatId={props.chatId} />
+            <Messages listenToMessages={listenToMessages} whoIsTyping={whoIsTyping} chatId={props.chatId} />
             <div className="flex flex-col w-full items-center justify-center">
               <div className="bg-zinc-100 w-full">
                 <PostMessageWizard sendMessage={sendMessage} theyTyping={theyTyping} typing={typing} chatId={props.chatId} />
