@@ -134,4 +134,24 @@ export const chatsRouter = createTRPCRouter({
         return 'deleted';
       }
     }),
+
+  addMember: privateProcedure
+    .input(
+      z.object({
+        chatId: z.string(),
+        participants: z.array(z.string()),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      await ctx.prisma.participants.createMany({
+        data: input.participants.map((participant) => {
+          return {
+            userId: participant,
+            chatId: input.chatId,
+          };
+        }),
+      });
+
+      return 'success';
+    }),
 });

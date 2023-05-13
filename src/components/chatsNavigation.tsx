@@ -1,10 +1,9 @@
 import { api } from "~/utils/api";
 import { useUser } from "@clerk/nextjs";
-import Image from 'next/image'
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { HowTo } from "./howTo"
-import { TypeOf } from "zod";
+import { UserList } from "./userList"
 
 
 export const Chats = (props: {openChat: {
@@ -81,53 +80,6 @@ export const Chats = (props: {openChat: {
     )
   }
   
-  const UsersList = (props: { participants: string[], setParticipants: Dispatch<SetStateAction<string[]>>}) => {
-    const {data, isLoading} = api.users.getAll.useQuery()
-    const placeHolder = new Array(10).fill(0)
-    const [users, setUsers] = useState<typeof data>()
-    const [filter, setFilter] = useState<typeof data>()
-
-    useEffect(() => {
-      setUsers(data)
-      setFilter(data)
-    }, [isLoading])
-
-
-
-    if (isLoading) {
-      return (
-        <div className="overflow-auto w-full h-36 scroll">
-            {placeHolder?.map(() => (
-              <button key={Math.floor(Math.random() * 10000000)} className="flex gap-4 bg-zinc-100 w-full items-cetner p-2 border border-2 hover:bg-zinc-200">
-                <div className="w-6 h-6 loaderGradient p-4 rounded-full"></div>
-                <p className="loaderGradient w-[60%] rounded-lg p-2"></p>
-              </button>
-            ))}
-        </div>
-      )
-    }
-    return (
-      <div className="flex flex-col items-center justify-center">
-        <input type="text" placeholder="search users.." className="p-2 bg-zinc-100 border-2 border-zinc-300 w-[95%] outline-none rounded-lg mb-2"
-          onChange={(e) => {setFilter(users?.filter((user) => user.username?.includes(e.target.value.toLowerCase())))}} />
-        <div className="overflow-auto w-full h-36 scroll">
-            {filter?.map((user) => (
-              <button key={user.id} className={props.participants.includes(user.id) ? "flex gap-4 bg-green-300 w-full items-cetner p-2" : "flex gap-4 bg-zinc-100 w-full items-cetner p-2 border border-2 hover:bg-zinc-200"} onClick={() => {
-                if (props.participants.includes(user.id)) {
-                  props.setParticipants(props.participants.filter((usr) => usr !== user.id))
-                } else {
-                  props.setParticipants(props.participants.concat(user.id))
-                }
-              }}>
-                <Image width={48} height={48} src={user.profileImageUrl} alt="profile" className="w-6 h-6 rounded-full text-xs drop-shadow-lg" />
-                <p>{user.username}</p>
-              </button>
-            ))}
-        </div>
-      </div>
-    )
-  }
-  
   const CreateChat = () => {
     const user = useUser()
     if (!user.user?.id) return <div/>
@@ -167,7 +119,7 @@ export const Chats = (props: {openChat: {
           !!open &&
           <div>
             <p className="font-bold text-2xl w-full text-center py-2">Create a chat:</p>
-            <UsersList participants={participants} setParticipants={setParticipants} />
+            <UserList participants={participants} setParticipants={setParticipants} currentMembers={undefined} />
             <div className="mt-4 flex flex-col items-center justify-center gap-4">
               <input value={chatName} type="text" onChange={(e) => setChatName(e.target.value)} className="w-[90%] p-1 bg-zinc-100 outline outline-1 outline-green-300 px-2 rounded-md" placeholder="Chat name..." />
               <div className="flex w-[90%] gap-2">
