@@ -29,7 +29,7 @@ const Home: NextPage = () => {
             <h1 className="sm:text-4xl text-2xl font-bold mb-10 -mt-20 sm:mb-10">Interactive Chatting 💬</h1>
             <SignInButton mode="modal">
               <div className="lg:w-[40%] sm:w-[60%] w-[70%] rounded-xl p-1 signInGradient hover:bg-transparent">
-                <button className="transition ease-in-out bg-gradient-to-r bg-green-500 w-[100%] p-8 hover:-translate-y-1 hover:scale-105 hover:bg-green-400 duration-200 rounded-xl sm:text-3xl hover:bg text-2xl font-bold drop-shadow-lg hover:drop-shadow-xl">
+                <button className="transition ease-in-out bg-gradient-to-r bg-green-500 w-[100%] p-8 hover:-translate-y-1 hover:scale-105 hover:bg-green-400 duration-200 rounded-lg sm:text-3xl hover:bg text-2xl font-bold drop-shadow-lg hover:drop-shadow-xl">
                   <span>Sign in</span>
                 </button>
               </div>

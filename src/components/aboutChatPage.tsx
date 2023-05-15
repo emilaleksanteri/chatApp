@@ -61,15 +61,15 @@ export const AboutChatPage = (props: { chatId: string, aboutOpen: boolean, setOp
         <div className="flex flex-col justify-center items-center h-[88vh]">
         {
             addUserView &&
-            <div className="bg-zinc-100 border-2 border-green-300 md:w-[40vw] w-[60vw] z-30 fixed h-[80vh] drop-shadow-xl rounded-lg flex flex-col items-center">
+            <div className="bg-zinc-100 border-2 border-green-300 md:w-[40vw] w-[90vw] z-30 fixed md:h-[80vh] h-[70vh] drop-shadow-xl rounded-lg flex flex-col items-center -mt-32">
                 <div className="w-full flex justify-end">
                     <button className="p-4" onClick={() => setAddUserView(false)}>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-14 h-14 stroke-green-300 drop-shadow-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-14 h-14 stroke-zinc-900 drop-shadow-md">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
-                <div className="w-[70%] h-fit mt-10 p-2">
+                <div className="w-[70%] h-[40vh] p-2 border-2 rounded-xl">
                     <p className="text-2xl font-bold py-4">Select New Participants:</p>
                     <UserList participants={participants} setParticipants={setParticipants} currentMembers={data}/>
                 </div>
@@ -88,14 +88,14 @@ export const AboutChatPage = (props: { chatId: string, aboutOpen: boolean, setOp
             <div className="flex justify-between items-center sm:w-[60%] w-[90%] text-4xl mt-10">
                 <p className="drop-shadow-lg font-bold text-zinc-100">Members:</p>
                 <button onClick={() => setAddUserView(true)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-14 h-14 stroke-green-300 drop-shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-14 h-14 stroke-zinc-800 drop-shadow-lg">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </button>
                 
             </div>
             
-            <div className="sm:w-[60%] w-[90%] mt-4 drop-shadow-xl p-2 overflow-scroll h-fit rounded-xl z-10 outline outline-4 outline-green-300 scroll">
+            <div className="sm:w-[60%] w-[90%] mt-4 drop-shadow-xl p-2 overflow-scroll h-fit rounded-xl z-10 border-8 border-green-300 scroll">
             {
                 isLoading &&
                 <div>
