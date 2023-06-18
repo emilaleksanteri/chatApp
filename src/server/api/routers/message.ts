@@ -1,12 +1,7 @@
 import { User, clerkClient } from '@clerk/nextjs/dist/api';
 import { z } from 'zod';
-import AIPic from '../../../../public/origin.jpg';
 
-import {
-  createTRPCRouter,
-  privateProcedure,
-  publicProcedure,
-} from '~/server/api/trpc';
+import { createTRPCRouter, privateProcedure } from '~/server/api/trpc';
 
 import { Configuration, OpenAIApi } from 'openai';
 
@@ -29,7 +24,6 @@ const filterUserForClient = (users: User) => {
 
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
-import { TRPCClientError } from '@trpc/client';
 import { TRPCError } from '@trpc/server';
 
 // Create a new ratelimiter, that allows 12 requests per 1 minute

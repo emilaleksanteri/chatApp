@@ -132,7 +132,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
   
     if (user) {
       return (
-        <div className="flex items-center w-full h-full p-4 border-2">
+        <div className="flex items-center w-full h-full p-2 border-2">
           <Image width={80} height={80} src={user.profileImageUrl} alt="Profile Picture" className="sm:w-[80px] sm:h-[80px] sm:inline hidden rounded-full drop-shadow-lg border-4 border-emerald-300" />
           <div className="sm:ml-8 ml-4 w-full">
             <div className="w-full flex items-center sm:gap-8 gap-2" >
@@ -243,7 +243,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
     if (isLoading) return <div className="relative w-full bgCgat overflow-y-scroll h-[78vh] flex items-center justify-center"><Loader widthHeight="w-[100px] h-[100px]" /></div>
   
     return (
-        <section className="relative w-full bgCgat overflow-y-scroll grid h-[76.5vh] md:w-[71.5vw] w-screen scroll">
+        <section className="relative w-full bgCgat overflow-y-scroll grid h-[78vh] mt-[0.5%] md:w-[71.5vw] w-screen scroll">
           <div className="flex flex-col gap-8 self-end -mb-4 mt-4">
             {data?.map((message) => {
               if (user.isSignedIn && user.user.id === message.author?.id) {
@@ -411,7 +411,7 @@ const AudioEffects = (props: {effect: number | undefined, sounds: {
         <AboutChatPage chatId={props.chatId} aboutOpen={aboutOpen} setOpenChat={props.setOpenChat} />
         {
           !aboutOpen &&
-          <div className="h-[100%]">
+          <div className="h-full">
             <Messages listenToMessages={listenToMessages} whoIsTyping={whoIsTyping} chatId={props.chatId} />
             <div className="flex flex-col w-full items-center justify-center">
               <div className="bg-zinc-100 w-full">
